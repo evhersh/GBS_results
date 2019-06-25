@@ -10,9 +10,9 @@ date: "24/06/2019"
 output: 
   html_document:
     theme: "readable"
+    highlight: "tango"
   
 ---
-
 ```{r dataprocess, include=FALSE, cache=TRUE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -25,9 +25,34 @@ knitr::read_chunk("gbs_results.R")
 <<load>>
 ```
 
+
+## Assembly and SNP filtering
+
+The assembly was created using only the diploid samples, and with the Yukon population removed (given its apparent distance from the rest of the sexual populations). SNPs were then called on the diploid reference using Freebayes, which is ploidy aware. This generated >400k SNPs, which were whittled down to ~16k SNPs using the following filtering steps:
+
+```
+# big filter. This filters based on quality, minor allele count, minor allele frequency, average depth (low and high), excludes indels and SNPs with more than 2 alleles, and removes SNPs that have >5% missing data. 
+~/bcftools/bcftools filter TotalRawSNPs.vcf | bcftools filter -e "QUAL < 30 & MQM < 30 & MQMR < 30 || AVG(GQ) < 20 || F_MISSING > 0.05 || MAC < 3 || MAF <0.05 || AVG(FMT/DP)<20 || AVG(FMT/DP)>132.5" | bcftools view --max-alleles 2 --exclude-types indels --output-type v --output-file filter1.vcf
+
+# allele balance
+vcffilter -s -f "AB > 0.125 & AB < 0.875 | AB < 0.01" filter1.vcf > filter2.vcf
+
+# SNPs found on both strands
+vcffilter -f "SAF / SAR > 100 & SRF / SRR > 100 | SAR / SAF > 100 & SRR / SRF > 100" -s filter2.vcf > filter3.vcf
+
+# ratio of mapping qualities between reference and alternate alleles
+vcffilter -f "MQM / MQMR > 0.9 & MQM / MQMR < 1.05" filter3.vcf > filter4.vcf
+
+# discrepancy in properly paired status of reads supporting reference or alternate alleles
+vcffilter -f "PAIRED > 0.05 & PAIREDR > 0.05 & PAIREDR / PAIRED < 1.75 & PAIREDR / PAIRED > 0.25 | PAIRED < 0.05 & PAIREDR < 0.05" -s filter4.vcf > filter5.vcf
+
+# ratio of locus quality score to depth
+vcffilter -f "QUAL / DP > 0.25" filter5.vcf > final.filtered.snps.vcf
+```
+
 ## Clone identification
 
-Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information.
+Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values.
 
 ```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
 <<MLGs>>
@@ -69,4 +94,28 @@ Here's a bunch of DAPC's using different groups / colors.
 <<MSN>>
 ```
 
+## AMOVA
 
+Here's my first AMOVA run. This uses an `ms/pop` heirarchy. This one is without clone correction:
+
+```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE}
+<<AMOVA>>
+```
+
+<br/><br/>
+
+Here's the AMOVA with clone correction
+
+```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE}
+<<AMOVA.cc>>
+```
+
+<!-- <br/><br/> -->
+
+<!-- ## `Poppr` function - genotype richness/diversity/evenness stats -->
+
+<!-- Here are the results from the `poppr` function on the full heirarchy (ms/pop/id): -->
+
+<!-- ```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE} -->
+<!-- <<Poppr.ms>> -->
+<!-- ``` -->

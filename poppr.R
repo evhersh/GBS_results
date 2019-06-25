@@ -34,6 +34,7 @@ strata(dips.gc) <- mystrata[sampleorder,]
 setPop(dips.gc) <- ~pop
 
 trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3)
+#ploidy(trips.gi) <- 3
 trips.gc <- as.genclone(trips.gi)
 sampleorder <- match(indNames(trips.gc), mystrata$id)
 strata(trips.gc) <- mystrata[sampleorder,]
@@ -80,6 +81,7 @@ mlg.table(AllPops.gc)
 # Poppr #
 #########
 set.seed(420)
+load("hookeri.poppr.RData")
 #hookeri.poppr <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~ms/pop/id)
 #hookeri.poppr.pop <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~pop/id)
 

@@ -53,7 +53,7 @@ AllPops.gc <-as.genclone(dipsNtripsNtets.gc)
 AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
 
 mll(AllPops.gc)
-
+set.seed(420)
 
 
 
@@ -145,3 +145,22 @@ replace(my.pch,my.pch==21, 19)
 
 # inds="none" to remove names
 plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms)
+
+
+
+
+
+## @knitr AMOVA
+hookeri.amova <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1)
+hookeri.amova
+
+## @knitr AMOVA.cc
+hookeri.amova.cc <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
+hookeri.amova.cc
+
+
+
+## @knitr Poppr.ms
+hookeri.poppr.ms <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~ms/pop/id)
+hookeri.poppr.ms
+
