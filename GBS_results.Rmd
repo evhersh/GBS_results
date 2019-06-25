@@ -26,8 +26,15 @@ knitr::read_chunk("gbs_results.R")
 
 Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information.
 
-```{r, fig.height=7, fig.width=10, cache=TRUE, results="hide"}
+```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
 <<MLGs>>
 ```
 
+## DAPC
+
+Here's a bunch of DAPC stuff. 
+
+```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
+<<DAPC>>
+```
 
