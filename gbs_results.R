@@ -75,7 +75,7 @@ mlgtab <- mlg.table(AllPops.gc)
 
 
 
-## @knitr DAPC
+## @knitr DAPC.ms
 
 my.pch <- c(17, 17, 17, 17, 17, 17, 21, 17, 17, 17, 17, 17, 17, 21, 21, 21, 21, 21, 17, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 17)
 my.pch <-replace(my.pch,my.pch==21, 19)
@@ -86,22 +86,62 @@ AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("S", "A"))
 hookeri.dapc.ms <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
 scatter(hookeri.dapc.ms, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = T, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75)
 
+## @knitr DAPC.popms
+
 # all pops, but color by ms
 setPop(AllPops.gc) <- ~pop
 hookeri.dapc.msp <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
 scatter(hookeri.dapc.msp, grp = AllPops.gc$strata$ms, cex = 2, legend = TRUE, clabel = T, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=c(17,19))
 
-# for pops (all)
+## @knitr DAPC.popall
+
+# for pops (all) 
 setPop(AllPops.gc) <- ~pop
 AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
 hookeri.dapc <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
 scatter(hookeri.dapc, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=my.pch)
+
+## @knitr DAPC.popsub
 
 # sub a few pops
 noYK.gc <- popsub(AllPops.gc, blacklist=c("C59-S", "SM-A", "C23-A", "S03-A"))
 hookeri.dapc2 <- dapc(noYK.gc, grp=noYK.gc$pop, n.pca=20, n.da=100)
 scatter(hookeri.dapc2, grp = noYK.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=my.pch.sub)
 
+## @knitr DAPC.member
+
+# structure-style plot
+dapc.results <- as.data.frame(hookeri.dapc$posterior)
+dapc.results$pop <- pop(AllPops.gc)
+dapc.results$indNames <- rownames(dapc.results)
+
+library(reshape2)
+dapc.results <- melt(dapc.results)
+
+colnames(dapc.results) <- c("Original_Pop","Sample","Assigned_Pop","Posterior_membership_probability")
+
+# Plot posterior assignments from DAPC (how is this different from Structure?)
+p2 <- ggplot(dapc.results, aes(x=Sample, y=Posterior_membership_probability, fill=Assigned_Pop))
+p2 <- p2 + geom_bar(stat='identity') 
+p2 <- p2 + scale_fill_manual(values = col_vector) 
+p2 <- p2 + facet_grid(~Original_Pop, scales = "free")
+p2 <- p2 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
+p2
 
 
 
+
+
+
+## @knitr MSN
+
+setPop(AllPops.gc, ~ms/pop)
+msn <- poppr.msn(AllPops.gc, dist, showplot = FALSE)
+
+# inds="none" to remove names
+my.cols.ms <- replace(my.pch,my.pch==19, "red")
+my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "blue")
+replace(my.pch,my.pch==21, 19)
+
+# inds="none" to remove names
+plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms)

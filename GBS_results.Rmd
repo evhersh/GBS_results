@@ -7,7 +7,10 @@ knit: (function(input_file, encoding) {
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "Evan Hersh"
 date: "24/06/2019"
-output: html_document
+output: 
+  html_document:
+    theme: "readable"
+  
 ---
 
 ```{r dataprocess, include=FALSE, cache=TRUE, echo=FALSE}
@@ -30,11 +33,40 @@ Using poppr, we were able to identify the same number of MLGs as the IBS (from S
 <<MLGs>>
 ```
 
+<br/><br/>
+
 ## DAPC
 
-Here's a bunch of DAPC stuff. 
+Here's a bunch of DAPC's using different groups / colors.
 
-```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
-<<DAPC>>
+```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Using MS as the two groups (Density plot of PC1)"}
+<<DAPC.ms>>
 ```
+
+<br/><br/>
+
+```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Pops as groups, but colored by mating system"}
+<<DAPC.popms>>
+```
+
+<br/><br/>
+
+```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Pops as groups - all pops"}
+<<DAPC.popall>>
+```
+
+<br/><br/>
+
+```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Pops as groups - sub C59-S SM-A C23-A S03-A"}
+<<DAPC.popsub>>
+```
+
+<br/><br/>
+
+## MSN
+
+```{r, fig.height=6, fig.width=8, cache=TRUE, echo=FALSE, results="hide"}
+<<MSN>>
+```
+
 
