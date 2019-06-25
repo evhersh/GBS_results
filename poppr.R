@@ -1,0 +1,223 @@
+############
+# Packages
+############
+library("vcfR")
+library("poppr")
+library("ape")
+library("RColorBrewer")
+library(gdsfmt)
+library(SNPRelate)
+library("ggplot2")
+library(reshape2)
+library(plotly)
+library(adegenet)
+library(knitr)
+
+###############
+# Data import #
+###############
+
+# strata (sample, pop, ms)
+mystrata <- read.csv("~/Google Drive/GitHub/Hookeri-GBS/popmap_all.csv")
+
+# vcf to vcfR
+vcf <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/final.filtered.snps.vcf")
+vcf.dips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.dips.vcf")
+vcf.trips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.trips.vcf")
+vcf.tets <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.tets.vcf")
+
+# vcfR to genind to genclone
+dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2)
+dips.gc <- as.genclone(dips.gi)
+sampleorder <- match(indNames(dips.gc), mystrata$id)
+strata(dips.gc) <- mystrata[sampleorder,]
+setPop(dips.gc) <- ~pop
+
+trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3)
+trips.gc <- as.genclone(trips.gi)
+sampleorder <- match(indNames(trips.gc), mystrata$id)
+strata(trips.gc) <- mystrata[sampleorder,]
+setPop(trips.gc) <- ~pop
+
+tets.gi <- vcfR2genind(vcf.tets, sep = "/", ploidy=4)
+tets.gc <- as.genclone(tets.gi)
+sampleorder <- match(indNames(tets.gc), mystrata$id)
+strata(tets.gc) <- mystrata[sampleorder,]
+setPop(tets.gc) <- ~pop
+
+# combine genclones
+dipsNtripsNtets.gc <- repool(dips.gc,trips.gc,tets.gc)
+#dipsNtripsNtets.gc$pop <- factor(dipsNtripsNtets.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
+
+AllPops.gc <-as.genclone(dipsNtripsNtets.gc)
+AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
+
+mll(AllPops.gc)
+
+
+
+############
+# Clone ID #
+############
+
+# calculate raw euclidian distance
+dist <- dist(AllPops.gc)
+
+# assign MLG's using raw euclidian distance from dist() [above]
+fstats <- filter_stats(AllPops.gc, distance=dist, plot=TRUE)
+
+# looks like this gives the same clone mlg assignments as my IBS stuff
+mlg.filter(AllPops.gc, distance=dist) <- 100
+
+
+mlg.table(AllPops.gc)
+
+#mll(AllPops.gc)
+
+# indNames(AllPops.gc)
+
+#########
+# Poppr #
+#########
+set.seed(420)
+#hookeri.poppr <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~ms/pop/id)
+#hookeri.poppr.pop <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~pop/id)
+
+
+
+
+#########
+# AMOVA #
+#########
+hookeri.amova <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1)
+hookeri.amova.cc <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
+
+
+
+
+#mlg.table(AllPops.gc)
+
+#mll.custom(AllPops.gc) <- c(1,2,3, 4,5,6, 7,8,9, 10,11,12, 13,14,15, 16,17,18, 19,20,21, 22,23,24, 25,26,27, 28,29,30, 31,32,33, 34,35,36, 37,38,39,40, #B42 - L62 
+                     #C23           #C27            #C43              #C85           #C86         #C87             #C88           #L06          #L16            #L17             #L39           #L41        #L45 change?    #L62    #S03           #SM
+#                41,41,41,41,41, 42,42,42,42,42, 43,43,43,43,43, 42,42,42,42,42, 42,42,42,42,42, 42,42,42,42,42, 42,42,42,42,42, 44,44,44,44,44, 45,45,44,45,44, 44,44,44,44,44, 46,46,46,46,46, 42,42,42,42, 47,42,42,42,42, 47, 48,48,48,48, 49,49,49,49,49)
+
+sampleorder <- match(indNames(AllPops.gc), mystrata$id)
+
+##################
+##### DAPC #######
+##################
+
+# finding clusters using k-means
+grp <- find.clusters(AllPops.gc, max.n.clust=30) # looks like lowest BIC is 13 clusters...
+names(grp)
+table(pop(AllPops.gc), grp$grp)
+table.value(table(pop(AllPops.gc), grp$grp), col.lab=paste("inf", 1:13),
+            row.lab=paste("ori", 1:13))
+
+# optimize number of PCs to keep
+dapc.x <- dapc(AllPops.gc, n.da=100, n.pca=50)
+temp <- optim.a.score(dapc.x) #11 is the optimal number of PCs
+
+# xval
+xtab <- tab(AllPops.gc, NA.method="mean")
+grp <- pop(AllPops.gc)
+
+xval <- xvalDapc(xtab, grp, n.pca.max = 300, training.set = 0.9,
+                 result = "groupMean", center = TRUE, scale = FALSE,
+                 n.pca = NULL, n.rep = 30, xval.plot = TRUE)
+xval[2:6] # 20 PCs has the highest prediction and lowest error
+
+# make the dapc
+# set shapes - triangle for sexuals, circles for apos
+my.pch <- c(17, 17, 17, 17, 17, 17, 21, 17, 17, 17, 17, 17, 17, 21, 21, 21, 21, 21, 17, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 17)
+my.pch <-replace(my.pch,my.pch==21, 19)
+my.pch.sub <- my.pch[-c(30,29,28,26)]
+# for ms
+setPop(AllPops.gc) <- ~ms
+AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("S", "A"))
+hookeri.dapc.ms <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
+scatter(hookeri.dapc.ms, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = T, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75)
+
+# all pops, but color by ms
+setPop(AllPops.gc) <- ~pop
+hookeri.dapc.msp <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
+scatter(hookeri.dapc.msp, grp = AllPops.gc$strata$ms, cex = 2, legend = TRUE, clabel = T, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=c(17,19))
+
+# for pops (all)
+setPop(AllPops.gc) <- ~pop
+AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
+hookeri.dapc <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
+scatter(hookeri.dapc, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=my.pch)
+
+# sub a few pops
+noYK.gc <- popsub(AllPops.gc, blacklist=c("C59-S", "SM-A", "C23-A", "S03-A"))
+hookeri.dapc2 <- dapc(noYK.gc, grp=noYK.gc$pop, n.pca=20, n.da=100)
+scatter(hookeri.dapc2, grp = noYK.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=my.pch.sub)
+
+# loadings
+contib <- loadingplot(hookeri.dapc$var.contr, axis=1, thres=0.0003, lab.jitter = 1)
+
+# membership probabilities
+summary(hookeri.dapc)
+
+assignplot(hookeri.dapc)
+
+compoplot(hookeri.dapc,posi="bottomright", lab="", ncol=1, xlab="individuals")
+
+# structure-style plot
+dapc.results <- as.data.frame(hookeri.dapc$posterior)
+dapc.results$pop <- pop(AllPops.gc)
+dapc.results$indNames <- rownames(dapc.results)
+
+library(reshape2)
+dapc.results <- melt(dapc.results)
+
+colnames(dapc.results) <- c("Original_Pop","Sample","Assigned_Pop","Posterior_membership_probability")
+
+# Plot posterior assignments from DAPC (how is this different from Structure?)
+p2 <- ggplot(dapc.results, aes(x=Sample, y=Posterior_membership_probability, fill=Assigned_Pop))
+p2 <- p2 + geom_bar(stat='identity') 
+p2 <- p2 + scale_fill_manual(values = col_vector) 
+p2 <- p2 + facet_grid(~Original_Pop, scales = "free")
+p2 <- p2 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
+p2
+
+
+# create figure
+# tiff("DAPC.tiff", res=300, units="in", width=8.6, height=5.8)
+# scatter(hookeri.dapc2, grp = noYK.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75)
+# dev.off()
+
+#seasun(length(levels(mdapc$grp)))[mdapc$grp]
+#col = col_vector
+#grp = dipsNtripsNtets.gc@strata$region
+
+
+
+
+#########
+# Trees #
+#########
+
+#aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = FALSE)
+
+# AllPops.gc %>%
+#   genind2genpop(pop = ~ms/pop) %>%
+#   aboot(cutoff = 50, quiet = FALSE, sample = 1000, distance = nei.dist)
+
+
+
+
+#######
+# MSN #
+#######
+setPop(AllPops.gc, ~ms/pop)
+msn <- poppr.msn(AllPops.gc, dist, showplot = FALSE)
+
+# inds="none" to remove names
+my.cols.ms <- replace(my.pch,my.pch==19, "red")
+my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "blue")
+replace(my.pch,my.pch==21, 19)
+
+# inds="none" to remove names
+plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms)
