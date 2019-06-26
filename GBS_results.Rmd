@@ -49,6 +49,11 @@ vcffilter -f "PAIRED > 0.05 & PAIREDR > 0.05 & PAIREDR / PAIRED < 1.75 & PAIREDR
 # ratio of locus quality score to depth
 vcffilter -f "QUAL / DP > 0.25" filter5.vcf > final.filtered.snps.vcf
 ```
+Checking for individual missingness after an early filtering step showed this:
+
+![](missingness.png)
+
+It's hard to see the names, but two of the samples from C59 (Yukon) and one from B46 have over 30% missingness. We should probably remove those before filtering...
 
 ## Clone identification
 
