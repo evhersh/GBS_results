@@ -26,7 +26,7 @@ knitr::read_chunk("gbs_results.R")
 ```
 
 
-## Assembly and SNP filtering
+## Assembly, individual missingness and filtering
 
 The assembly was created using only the diploid samples, and with the Yukon population removed (given its apparent distance from the rest of the sexual populations). SNPs were then called on the diploid reference using Freebayes, which is ploidy aware. This generated >400k SNPs, which were whittled down to ~16k SNPs using the following filtering steps:
 
@@ -51,9 +51,17 @@ vcffilter -f "QUAL / DP > 0.25" filter5.vcf > final.filtered.snps.vcf
 ```
 Checking for individual missingness after an early filtering step showed this:
 
-![](missingness.png)
+![](missingness_before.png)
 
-It's hard to see the names, but two of the samples from C59 (Yukon) and one from B46 have over 30% missingness. We should probably remove those before filtering...
+It's hard to see the names, but two of the samples from C59 (Yukon) and one from B46 have over 30% missingness. We should probably remove those before filtering, because they retain high(ish) missingness even after filtering:
+
+![](missing_after.png)
+
+After removing those three samples and filtering, our SNP count went from 16.2k to 17.1k (so not a huge difference). Here's what it looks like:
+
+![](missing_aftersub.png)
+
+Should we remove these individuals?
 
 ## Clone identification
 
@@ -93,6 +101,16 @@ Here's a bunch of DAPC's using different groups / colors.
 
 <br/><br/>
 
+Here's a plot of the posterior membership probabilities:
+
+![](compoplot.png)
+
+## K-means clustering
+
+This is hot off the press. I used a K-means approach from the adegenet package (following this tutorial: http://grunwaldlab.github.io/Population_Genetics_in_R/clustering_plot.html), which uses a clustering algorithm that is similar to STRUCTURE. **Plot A** below is based on 50 runs of the find.clusters algorithm, and shows that ~10-13 clusters have the lowest BIC. **Plot B** is a scatterplot of the discriminant functions (K=10), which helps us see how different the resulting clusters are. **Plot C** shows barplots of the posterior probability group assignments for K = 10-13, which helps visualize how the groups are assigned under different values of K. The K-means results are more-or-less consistent with our other findings, as they assign clones to pretty much the same groups. 
+
+![](kmeans.png)
+
 ## MSN
 
 ```{r, fig.height=6, fig.width=8, cache=TRUE, echo=FALSE, results="hide"}
@@ -114,6 +132,8 @@ Here's the AMOVA with clone correction
 ```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE}
 <<AMOVA.cc>>
 ```
+
+I don't really know how to interpret this yet...
 
 <!-- <br/><br/> -->
 
