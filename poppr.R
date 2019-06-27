@@ -101,7 +101,7 @@ load("hookeri.poppr.RData")
 #########
 hookeri.amova <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1)
 hookeri.amova.cc <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
-
+hookeri.amova.cc.pop <- poppr.amova(AllPops.gc, ~pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
 
 
 
@@ -329,10 +329,19 @@ p4
 # Trees #
 #########
 
-#aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = FALSE)
+aboot(AllPops.gc, dist = dist(), sample = 200, tree = "nj", cutoff = 50, quiet = FALSE)
+
+theTree <- dist %>%
+  nj() %>%    # calculate neighbor-joining tree
+  ladderize() # organize branches by clade
+plot(theTree)
+add.scale.bar(length = 0.05)
+
+aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
+
 
 # AllPops.gc %>%
-#   genind2genpop(pop = ~ms/pop) %>%
+#   genind2genpop(pop = ~pop) %>%
 #   aboot(cutoff = 50, quiet = FALSE, sample = 1000, distance = nei.dist)
 
 

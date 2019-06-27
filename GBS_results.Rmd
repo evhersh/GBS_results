@@ -117,30 +117,49 @@ This is hot off the press. I used a K-means approach from the adegenet package (
 <<MSN>>
 ```
 
-## AMOVA
+<!-- ## AMOVA -->
 
-Here's my first AMOVA run. This uses an `ms/pop` heirarchy. This one is without clone correction:
+<!-- Here's my first AMOVA run. This uses an `ms/pop` heirarchy. This one is without clone correction: -->
 
-```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE}
-<<AMOVA>>
-```
-
-<br/><br/>
-
-Here's the AMOVA with clone correction
-
-```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE}
-<<AMOVA.cc>>
-```
-
-I don't really know how to interpret this yet...
+<!-- ```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE} -->
+<!-- <<AMOVA>> -->
+<!-- ``` -->
 
 <!-- <br/><br/> -->
 
-<!-- ## `Poppr` function - genotype richness/diversity/evenness stats -->
-
-<!-- Here are the results from the `poppr` function on the full heirarchy (ms/pop/id): -->
+<!-- Here's the AMOVA with clone correction -->
 
 <!-- ```{r, fig.height=6, fig.width=8, cache=TRUE, echo=TRUE} -->
-<!-- <<Poppr.ms>> -->
+<!-- <<AMOVA.cc>> -->
 <!-- ``` -->
+
+<!-- I don't really know how to interpret this yet... -->
+
+<br/><br/>
+
+## `Poppr` function - genotype richness/diversity/evenness stats
+
+This shows us several summary statistics:
+
+| Abbreviation | Statistic |
+|------|---------------------------------------------------------------|
+|`Pop` |  Population name.|
+|`N` |  Number of individuals observed.|
+|`MLG` | Number of multilocus genotypes (MLG) observed.|
+|`eMLG` | The number of expected MLG at the smallest sample size ≥ 10 based on rarefaction |
+|`SE` | Standard error based on eMLG.|
+|`H` | Shannon-Wiener Index of MLG diversity|
+|`G` | Stoddart and Taylor’s Index of MLG diversity|
+|`lambda` | Simpson's Index|
+|`E.5` | Evenness, $E_5$|
+|`Hexp` | Nei's unbiased gene diversity|
+|`Ia` | The index of association, $I_A$|
+|`rbarD` | The standardized index of association|
+
+Here are the results from the `poppr` function on the populations.
+
+```{r, cache=TRUE, echo=TRUE}
+load("hookeri.poppr.pop.RData")
+hookeri.poppr.pop[-c(4,5,10,15)]
+# <<Poppr>>
+```

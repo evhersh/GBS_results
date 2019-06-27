@@ -282,7 +282,9 @@ hookeri.amova.cc
 
 
 
-## @knitr Poppr.ms
-hookeri.poppr.ms <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~ms/pop/id)
-hookeri.poppr.ms
+## @knitr Poppr
+# hookeri.poppr.ms <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~ms/pop/id)
+# hookeri.poppr.ms
 
+load("hookeri.poppr.pop.RData")
+hookeri.poppr.pop
