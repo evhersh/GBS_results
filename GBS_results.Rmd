@@ -163,3 +163,13 @@ load("hookeri.poppr.pop.RData")
 hookeri.poppr.pop[-c(4,5,10,15)]
 # <<Poppr>>
 ```
+
+## NJ Tree on populations
+
+Here's a NJ tree on the populations. It uses provesti distance, which is probably biased, but it's a start...
+
+![](nj_pop.png)
+
+## Map
+
+![](map02.png)

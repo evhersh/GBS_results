@@ -13,6 +13,7 @@ library(plotly)
 library(adegenet)
 library(knitr)
 library(ggpubr)
+library(hierfstat)
 
 ###############
 # Data import #
@@ -28,13 +29,14 @@ vcf.trips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.trips.vc
 vcf.tets <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.tets.vcf")
 
 # vcfR to genind to genclone
-dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2)
+dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2, return.alleles = TRUE)
 dips.gc <- as.genclone(dips.gi)
 sampleorder <- match(indNames(dips.gc), mystrata$id)
 strata(dips.gc) <- mystrata[sampleorder,]
 setPop(dips.gc) <- ~pop
 
 trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3)
+trips.gl <- vcfR2genlight(vcf.trips)
 #ploidy(trips.gi) <- 3
 trips.gc <- as.genclone(trips.gi)
 sampleorder <- match(indNames(trips.gc), mystrata$id)
@@ -56,6 +58,19 @@ AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B4
 
 mll(AllPops.gc)
 save(AllPops.gc, file="AllPops.gc.RData")
+
+x.mat <- as.matrix(AllPops.gc)
+x.mat[x.mat == 0] <- "1/1"
+x.mat[x.mat == 1] <- "1/2"
+x.mat[x.mat == 2] <- "2/2"
+
+genind2genalex(AllPops.gc, "hookeri_genalex.txt", sep="\t", sequence=TRUE, overwrite = TRUE)
+hookeri.AF <-genind2df(AllPops.gc)
+hookeri.AF <-cbind(ind = rownames(hookeri.AF), hookeri.AF)
+hookeri.AF[4]
+
+rownames(hookeri.AF) <- NULL
+write.table(hookeri.AF, file="Hookeri_AF.txt", sep="\t", row.names=TRUE, quote=FALSE)
 # make more colors
 
 n <- 60
@@ -94,7 +109,24 @@ load("hookeri.poppr.RData")
 #hookeri.poppr.pop <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~pop/id)
 
 
+###################
+# private alleles #
+###################
+my.ploidy <- c(17, 17, 17, 17, 17, 17, 21, 17, 17, 17, 17, 17, 17, 21, 21, 21, 21, 21, 17, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 17)
+my.ploidy <-replace(my.ploidy,my.ploidy==21, 3)
+my.ploidy <-replace(my.ploidy,my.ploidy==17, 2)
+my.ploidy[29] <- 4
+my.ploidy
+## tabcount is a matrix pop x alleles, counting alleles per pop
+tabcount <- apply(tab(AllPops.gc), 2, tapply, pop(AllPops.gc), sum, na.rm=FALSE)
+AllPops.gp <- new("genpop", tabcount, type="codom", ploidy=my.ploidy)
+summary(AllPops.gp)
+popNames(All)
 
+pal <- private_alleles(AllPops.gp, level="population", report="data.frame")
+ 
+ggplot(pal) + geom_tile(aes(x = population, y = allele, fill = count))
+ggplot(pal) + geom_boxplot(aes(x=population, y= count))
 
 #########
 # AMOVA #
@@ -103,7 +135,8 @@ hookeri.amova <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1)
 hookeri.amova.cc <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
 hookeri.amova.cc.pop <- poppr.amova(AllPops.gc, ~pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
 
-
+# pop_combinations <- combn(popNames(AllPops.gc), 2)
+# amova_list.cc <- apply(pop_combinations, MARGIN = 2, function(i) poppr.amova(AllPops.gc[pop = i], ~pop, within=FALSE, cutoff=0.1, clonecorrect = TRUE))
 
 #mlg.table(AllPops.gc)
 
@@ -112,6 +145,18 @@ hookeri.amova.cc.pop <- poppr.amova(AllPops.gc, ~pop, within=FALSE, cutoff = 0.1
 #                41,41,41,41,41, 42,42,42,42,42, 43,43,43,43,43, 42,42,42,42,42, 42,42,42,42,42, 42,42,42,42,42, 42,42,42,42,42, 44,44,44,44,44, 45,45,44,45,44, 44,44,44,44,44, 46,46,46,46,46, 42,42,42,42, 47,42,42,42,42, 47, 48,48,48,48, 49,49,49,49,49)
 
 sampleorder <- match(indNames(AllPops.gc), mystrata$id)
+
+
+#######
+# Fst #
+#######
+my.ploidy <- c(17, 17, 17, 17, 17, 17, 21, 17, 17, 17, 17, 17, 17, 21, 21, 21, 21, 21, 17, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 17)
+my.ploidy <-replace(my.ploidy,my.ploidy==21, 3)
+my.ploidy <-replace(my.ploidy,my.ploidy==17, 2)
+my.ploidy[29] <- 4
+
+matFST <- pairwise.fst(AllPops.gc, res.type="matrix")
+
 
 ##################
 ##### DAPC #######
@@ -329,16 +374,24 @@ p4
 # Trees #
 #########
 
-aboot(AllPops.gc, dist = dist(), sample = 200, tree = "nj", cutoff = 50, quiet = FALSE)
+# aboot(AllPops.gc, dist = dist(), sample = 200, tree = "nj", cutoff = 50, quiet = FALSE)
+# 
+# theTree <- dist %>%
+#   nj() %>%    # calculate neighbor-joining tree
+#   ladderize() # organize branches by clade
+# plot(theTree)
+# add.scale.bar(length = 0.05)
 
-theTree <- dist %>%
-  nj() %>%    # calculate neighbor-joining tree
-  ladderize() # organize branches by clade
-plot(theTree)
-add.scale.bar(length = 0.05)
+# for inds
+hookeri.nj <- aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
 
-aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
+# for pops
+hookpop.nj <- aboot(AllPops.gp, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
 
+plot.phylo(hookpop.nj, cex=0.8, tip.color = my.cols.ms)
+nodelabels(hookpop.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
+           font = 3, xpd = TRUE)
+axisPhylo(3)
 
 # AllPops.gc %>%
 #   genind2genpop(pop = ~pop) %>%
