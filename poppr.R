@@ -124,7 +124,9 @@ summary(AllPops.gp)
 popNames(All)
 
 pal <- private_alleles(AllPops.gp, level="population", report="data.frame")
- 
+
+
+
 ggplot(pal) + geom_tile(aes(x = population, y = allele, fill = count))
 ggplot(pal) + geom_boxplot(aes(x=population, y= count))
 
@@ -157,7 +159,13 @@ my.ploidy[29] <- 4
 
 matFST <- pairwise.fst(AllPops.gc, res.type="matrix")
 
+Nei.mat <- dist.genpop(AllPops.gp, method=1)
+Nei.tree <- nj(Nei.mat)
 
+plot(Nei.tree, type="unr", tip.col=my.cols.ms, font=2)
+annot <- round(Nei.tree$edge.length,2)
+edgelabels(annot[annot>0], which(annot>0), frame="n")
+add.scale.bar()
 ##################
 ##### DAPC #######
 ##################
