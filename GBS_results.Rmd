@@ -170,9 +170,9 @@ Here's a NJ tree on the populations. It uses provesti distance, which is probabl
 
 ![](nj_pop.png)
 
-Here's a slightly different one...
+<!-- Here's a slightly different one... -->
 
-![](Nei_tree.png)
+<!-- ![](Nei_tree.png) -->
 
 ## Map
 
