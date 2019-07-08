@@ -73,6 +73,12 @@ Using poppr, we were able to identify the same number of MLGs as the IBS (from S
 
 <br/><br/>
 
+## Ploidy confirmation
+
+This is a cool way to confirm ploidy using genomic data found here: https://knausb.github.io/vcfR_documentation/determining_ploidy_1.html. Basically, you can harness the 'DP' (sequencing depth) field from your VCF files to calculate the ratio of times each allele was sequenced in each individual. The idea is that if you sequence a diploid heterozygote (A/T) at 30x coverage, we would expect to sequence each allele around 15 times (giving an allele balance of 1/2). For a triploid (A/T/T), we'd expect to sequence the 'A' 10 times and the 'T' 20 times, giving allele balances of 1/3 and 2/3. If calculate the mean allele balances for each individual and plot them, you'd thus expect to see a single peak at 1/2 for diploids, two peaks (1/3 and 2/3) for triploids, and 3 peaks (1/4, 1/2, and 3/4) for tetraploids. Here's what it looks like for our data:
+
+![](ABplots.png)
+
 ## DAPC
 
 Here's a bunch of DAPC's using different groups / colors.
