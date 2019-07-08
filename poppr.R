@@ -329,7 +329,7 @@ names(grp.labs) <- my_k
 
 my_df$pop <- factor(my_df$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
 
-my_df[ my_df$K == 2 & my_df$Group == 2, ]
+my_df[ my_df$K == 2 & my_df$Group == 2, "Group"]
 
 p3 <- ggplot(my_df, aes(x = Sample, y = Posterior, fill = Group))
 p3 <- p3 + geom_bar(stat = "identity")

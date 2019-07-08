@@ -6,7 +6,7 @@ knit: (function(input_file, encoding) {
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "Evan Hersh"
-date: "24/06/2019"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
     theme: "readable"
