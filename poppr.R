@@ -30,12 +30,14 @@ vcf.tets <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.tets.vcf"
 
 # vcfR to genind to genclone
 dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2, return.alleles = TRUE)
+#dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2)
 dips.gc <- as.genclone(dips.gi)
 sampleorder <- match(indNames(dips.gc), mystrata$id)
 strata(dips.gc) <- mystrata[sampleorder,]
 setPop(dips.gc) <- ~pop
 
-trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3)
+trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3, return.alleles = TRUE)
+#trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3)
 trips.gl <- vcfR2genlight(vcf.trips)
 #ploidy(trips.gi) <- 3
 trips.gc <- as.genclone(trips.gi)
@@ -43,7 +45,8 @@ sampleorder <- match(indNames(trips.gc), mystrata$id)
 strata(trips.gc) <- mystrata[sampleorder,]
 setPop(trips.gc) <- ~pop
 
-tets.gi <- vcfR2genind(vcf.tets, sep = "/", ploidy=4)
+tets.gi <- vcfR2genind(vcf.tets, sep = "/", ploidy=4, return.alleles = TRUE)
+#tets.gi <- vcfR2genind(vcf.tets, sep = "/", ploidy=4)
 tets.gc <- as.genclone(tets.gi)
 sampleorder <- match(indNames(tets.gc), mystrata$id)
 strata(tets.gc) <- mystrata[sampleorder,]
@@ -57,20 +60,23 @@ AllPops.gc <-as.genclone(dipsNtripsNtets.gc)
 AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
 
 mll(AllPops.gc)
-save(AllPops.gc, file="AllPops.gc.RData")
+# save(AllPops.gc, file="AllPops.gc.RData")
+# 
+# x.mat <- as.matrix(AllPops.gc)
+# x.mat[x.mat == 0] <- "1/1"
+# x.mat[x.mat == 1] <- "1/2"
+# x.mat[x.mat == 2] <- "2/2"
+# 
+# genind2genalex(AllPops.gc, "hookeri_genalex.txt", sep="\t", sequence=TRUE, overwrite = TRUE)
 
-x.mat <- as.matrix(AllPops.gc)
-x.mat[x.mat == 0] <- "1/1"
-x.mat[x.mat == 1] <- "1/2"
-x.mat[x.mat == 2] <- "2/2"
-
-genind2genalex(AllPops.gc, "hookeri_genalex.txt", sep="\t", sequence=TRUE, overwrite = TRUE)
+hook.fstat <- genind2hierfstat(AllPops.gc)
 hookeri.AF <-genind2df(AllPops.gc)
 hookeri.AF <-cbind(ind = rownames(hookeri.AF), hookeri.AF)
 hookeri.AF[4]
 
 rownames(hookeri.AF) <- NULL
 write.table(hookeri.AF, file="Hookeri_AF.txt", sep="\t", row.names=TRUE, quote=FALSE)
+
 # make more colors
 
 n <- 60
@@ -79,6 +85,54 @@ col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_co
 pie(rep(1,n), col=sample(col_vector, n))
 
 cols <- brewer.pal(n = nPop(AllPops.gc), name = "Paired")
+
+###################
+# data conversion #
+###################
+
+genind2structure <- function(obj, file="", pops=FALSE){
+  if(!"genind" %in% class(obj)){
+    warning("Function was designed for genind objects.")
+  }
+  
+  # get the max ploidy of the dataset
+  pl <- max(obj@ploidy)
+  # get the number of individuals
+  S <- adegenet::nInd(obj)
+  # column of individual names to write; set up data.frame
+  tab <- data.frame(ind=rep(indNames(obj), each=pl))
+  # column of pop ids to write
+  if(pops){
+    popnums <- 1:adegenet::nPop(obj)
+    names(popnums) <- as.character(unique(adegenet::pop(obj)))
+    popcol <- rep(popnums[as.character(adegenet::pop(obj))], each=pl)
+    tab <- cbind(tab, data.frame(pop=popcol))
+  }
+  loci <- adegenet::locNames(obj) 
+  # add columns for genotypes
+  tab <- cbind(tab, matrix(-9, nrow=dim(tab)[1], ncol=adegenet::nLoc(obj),
+                           dimnames=list(NULL,loci)))
+  
+  # begin going through loci
+  for(L in loci){
+    thesegen <- obj@tab[,grep(paste("^", L, "\\.", sep=""), 
+                              dimnames(obj@tab)[[2]]), 
+                        drop = FALSE] # genotypes by locus
+    al <- 1:dim(thesegen)[2] # numbered alleles
+    for(s in 1:S){
+      if(all(!is.na(thesegen[s,]))){
+        tabrows <- (1:dim(tab)[1])[tab[[1]] == indNames(obj)[s]] # index of rows in output to write to
+        tabrows <- tabrows[1:sum(thesegen[s,])] # subset if this is lower ploidy than max ploidy
+        tab[tabrows,L] <- rep(al, times = thesegen[s,])
+      }
+    }
+  }
+  
+  # export table
+  write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE)
+}
+
+# genind2structure(AllPops.gc, file="AllPops.structure", pops=TRUE)
 
 ############
 # Clone ID #
