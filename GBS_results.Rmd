@@ -65,13 +65,17 @@ vcffilter -f "QUAL / DP > 0.25" filter5.vcf > final.filtered.snps.vcf
 
 ## Clone identification
 
-Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using the basic R dist() function with "euclidean" method) as the within-population pairwise comparisons are always between individuals of the same ploidy.  
+Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using the basic R dist() function with "euclidean" method) as the within-population pairwise comparisons are always between individuals of the same ploidy. 
 
 ```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
 <<MLGs>>
 ```
 
 <br/><br/>
+
+I also calculated pairwise distances within populations and plotted them. This is similar to the IBS plot I made for my AGA poster, but using euclidian distance (raw dissimilarity) instead of IBS (% similarity). The R package I was using to calculate IBS (SNPRelate) was diploidizing my data without telling me, so I've switched to adegenet/poppr which can handle multiple ploidy levels. However, it's also worth noting that Meirmans et al (2018) report that this exact type of comparison (diploid-diploid vs polyploid-polyploid) is biased, so we should take these results with a grain of salt...
+
+![](GGwInPopDists.png)
 
 ## Ploidy confirmation
 

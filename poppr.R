@@ -23,10 +23,20 @@ library(hierfstat)
 mystrata <- read.csv("~/Google Drive/GitHub/Hookeri-GBS/popmap_all.csv")
 
 # vcf to vcfR
-vcf <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/final.filtered.snps.vcf")
-vcf.dips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.dips.vcf")
-vcf.trips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.trips.vcf")
-vcf.tets <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.tets.vcf")
+# vcf <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/final.filtered.snps.vcf")
+# vcf.dips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.dips.vcf")
+# vcf.trips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.trips.vcf")
+# vcf.tets <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.tets.vcf")
+
+# vcf <- read.vcfR("final.filtered.snps.allalleles.vcf")
+# vcf.dips <- read.vcfR("filtered.dips.allalleles.vcf")
+# vcf.trips <- read.vcfR("filtered.trips.allalleles.vcf")
+# vcf.tets <- read.vcfR("filtered.tets.allalleles.vcf")
+
+head(is.biallelic(vcf.dips))
+
+# vcfdips.gt <- vcfR::extract.gt(vcf.dips, return.alleles = TRUE, convertNA = TRUE)
+# dips <- df2genind(vcfdips.gt, sep="/", NA.char="NA", type="codom")
 
 # vcfR to genind to genclone
 dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2, return.alleles = TRUE)
@@ -59,7 +69,13 @@ dipsNtripsNtets.gc <- repool(dips.gc,trips.gc,tets.gc)
 AllPops.gc <-as.genclone(dipsNtripsNtets.gc)
 AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
 
+
+
+ploidy.infotable <- info_table(AllPops.gc, type="ploidy")
+ploidy.infotable[60:90,30:60]
+
 mll(AllPops.gc)
+# save(AllPops.gc, file="AllPopsReturnAlleles.gc.RData")
 # save(AllPops.gc, file="AllPops.gc.RData")
 # 
 # x.mat <- as.matrix(AllPops.gc)
@@ -69,13 +85,13 @@ mll(AllPops.gc)
 # 
 # genind2genalex(AllPops.gc, "hookeri_genalex.txt", sep="\t", sequence=TRUE, overwrite = TRUE)
 
-hook.fstat <- genind2hierfstat(AllPops.gc)
-hookeri.AF <-genind2df(AllPops.gc)
-hookeri.AF <-cbind(ind = rownames(hookeri.AF), hookeri.AF)
-hookeri.AF[4]
-
-rownames(hookeri.AF) <- NULL
-write.table(hookeri.AF, file="Hookeri_AF.txt", sep="\t", row.names=TRUE, quote=FALSE)
+# hook.fstat <- genind2hierfstat(AllPops.gc)
+# hookeri.AF <-genind2df(AllPops.gc)
+# hookeri.AF <-cbind(ind = rownames(hookeri.AF), hookeri.AF)
+# hookeri.AF[4]
+# 
+# rownames(hookeri.AF) <- NULL
+# write.table(hookeri.AF, file="Hookeri_AF.txt", sep="\t", row.names=TRUE, quote=FALSE)
 
 # make more colors
 
@@ -90,49 +106,79 @@ cols <- brewer.pal(n = nPop(AllPops.gc), name = "Paired")
 # data conversion #
 ###################
 
-genind2structure <- function(obj, file="", pops=FALSE){
-  if(!"genind" %in% class(obj)){
-    warning("Function was designed for genind objects.")
-  }
-  
-  # get the max ploidy of the dataset
-  pl <- max(obj@ploidy)
-  # get the number of individuals
-  S <- adegenet::nInd(obj)
-  # column of individual names to write; set up data.frame
-  tab <- data.frame(ind=rep(indNames(obj), each=pl))
-  # column of pop ids to write
-  if(pops){
-    popnums <- 1:adegenet::nPop(obj)
-    names(popnums) <- as.character(unique(adegenet::pop(obj)))
-    popcol <- rep(popnums[as.character(adegenet::pop(obj))], each=pl)
-    tab <- cbind(tab, data.frame(pop=popcol))
-  }
-  loci <- adegenet::locNames(obj) 
-  # add columns for genotypes
-  tab <- cbind(tab, matrix(-9, nrow=dim(tab)[1], ncol=adegenet::nLoc(obj),
-                           dimnames=list(NULL,loci)))
-  
-  # begin going through loci
-  for(L in loci){
-    thesegen <- obj@tab[,grep(paste("^", L, "\\.", sep=""), 
-                              dimnames(obj@tab)[[2]]), 
-                        drop = FALSE] # genotypes by locus
-    al <- 1:dim(thesegen)[2] # numbered alleles
-    for(s in 1:S){
-      if(all(!is.na(thesegen[s,]))){
-        tabrows <- (1:dim(tab)[1])[tab[[1]] == indNames(obj)[s]] # index of rows in output to write to
-        tabrows <- tabrows[1:sum(thesegen[s,])] # subset if this is lower ploidy than max ploidy
-        tab[tabrows,L] <- rep(al, times = thesegen[s,])
-      }
-    }
-  }
-  
-  # export table
-  write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE)
-}
+# genind2structure <- function(obj, file="", pops=FALSE){
+#   if(!"genind" %in% class(obj)){
+#     warning("Function was designed for genind objects.")
+#   }
+#   
+#   # get the max ploidy of the dataset
+#   pl <- max(obj@ploidy)
+#   # get the number of individuals
+#   S <- adegenet::nInd(obj)
+#   # column of individual names to write; set up data.frame
+#   tab <- data.frame(ind=rep(indNames(obj), each=pl))
+#   # column of pop ids to write
+#   if(pops){
+#     popnums <- 1:adegenet::nPop(obj)
+#     names(popnums) <- as.character(unique(adegenet::pop(obj)))
+#     popcol <- rep(popnums[as.character(adegenet::pop(obj))], each=pl)
+#     tab <- cbind(tab, data.frame(pop=popcol))
+#   }
+#   loci <- adegenet::locNames(obj) 
+#   # add columns for genotypes
+#   tab <- cbind(tab, matrix(-9, nrow=dim(tab)[1], ncol=adegenet::nLoc(obj),
+#                            dimnames=list(NULL,loci)))
+#   
+#   # begin going through loci
+#   for(L in loci){
+#     thesegen <- obj@tab[,grep(paste("^", L, "\\.", sep=""), 
+#                               dimnames(obj@tab)[[2]]), 
+#                         drop = FALSE] # genotypes by locus
+#     al <- 1:dim(thesegen)[2] # numbered alleles
+#     for(s in 1:S){
+#       if(all(!is.na(thesegen[s,]))){
+#         tabrows <- (1:dim(tab)[1])[tab[[1]] == indNames(obj)[s]] # index of rows in output to write to
+#         tabrows <- tabrows[1:sum(thesegen[s,])] # subset if this is lower ploidy than max ploidy
+#         tab[tabrows,L] <- rep(al, times = thesegen[s,])
+#       }
+#     }
+#   }
+#   
+#   # export table
+#   write.table(tab, file=file, sep="\t", quote=FALSE, row.names=FALSE)
+# }
 
 # genind2structure(AllPops.gc, file="AllPops.structure", pops=TRUE)
+
+my_gt <- extract.gt(vcf, convertNA = FALSE)
+my_gt <- t(my_gt)
+
+my_gt[] <- gsub("[/|]", "", my_gt) # remove separators
+my_gt[] <- gsub("1", "2", my_gt) # change 1 to 2
+my_gt[] <- gsub("0", "1", my_gt) # change 0 to 1
+my_gt[] <- gsub("\\.", "0", my_gt) # change . to 0
+my_gt[1:30, 1:30]
+
+my_gt <-cbind(ind = rownames(my_gt), my_gt)
+#rownames(my_gt) <- NULL
+write.table(my_gt, file="in.txt", sep="\t", row.names=TRUE, quote=FALSE)
+
+relat_mat <- read.csv("relatedness_mat.csv", header=FALSE)
+relat_mat <- as.matrix(relat_mat)
+ncol(relat_mat)
+nrow(relat_mat)
+
+inds <- rownames(my_gt)
+
+colnames(relat_mat) <- inds
+rownames(relat_mat) <- inds
+
+relat_mat <- as.matrix(relat_mat)
+
+diss_mat = 3.6449128-relat_mat
+
+simrel_pair <- as.dist(diss_mat)
+
 
 ############
 # Clone ID #
@@ -175,7 +221,7 @@ my.ploidy
 tabcount <- apply(tab(AllPops.gc), 2, tapply, pop(AllPops.gc), sum, na.rm=FALSE)
 AllPops.gp <- new("genpop", tabcount, type="codom", ploidy=my.ploidy)
 summary(AllPops.gp)
-popNames(All)
+popNames(AllPops.gp)
 
 pal <- private_alleles(AllPops.gp, level="population", report="data.frame")
 
@@ -220,6 +266,8 @@ plot(Nei.tree, type="unr", tip.col=my.cols.ms, font=2)
 annot <- round(Nei.tree$edge.length,2)
 edgelabels(annot[annot>0], which(annot>0), frame="n")
 add.scale.bar()
+
+
 ##################
 ##### DAPC #######
 ##################
@@ -249,7 +297,6 @@ maxK <- 30
 myMat <- matrix(nrow=50, ncol=maxK)
 colnames(myMat) <- 1:ncol(myMat)
 for(i in 1:nrow(myMat)){
-  set.seed(9)
   grp <- find.clusters(AllPops.gc, n.pca = 200, choose.n.clust = FALSE,  max.n.clust = maxK)
   myMat[i,] <- grp$Kstat
 }
@@ -266,13 +313,13 @@ p1 <- p1 + xlab("Number of groups (K)")
 p1 # 10 clusters kind of looks right
 
 # plot 2 #
-my_k0 <- 10
+my_k0 <- 9
 
 grp0_l <- vector(mode = "list", length = length(my_k0))
 dapc0_l <- vector(mode = "list", length = length(my_k0))
 
 for(i in 1:length(dapc0_l)){
-  set.seed(9)
+  set.seed(10)
   grp0_l[[i]] <- find.clusters(AllPops.gc, n.pca = 200, n.clust = my_k0[i])
   dapc0_l[[i]] <- dapc(AllPops.gc, pop = grp0_l[[i]]$grp, n.pca = 20, n.da = my_k0[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp_l[[i]]$grp, n.pca = 3, n.da = 2)
@@ -290,13 +337,13 @@ p2 <- p2 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
 p2
 
 # plot 3
-my_k <- 10:13
+my_k <- 9:12
 
 grp_l <- vector(mode = "list", length = length(my_k))
 dapc_l <- vector(mode = "list", length = length(my_k))
 
 for(i in 1:length(dapc_l)){
-  set.seed(9)
+  set.seed(10)
   grp_l[[i]] <- find.clusters(AllPops.gc, n.pca = 200, n.clust = my_k[i])
   dapc_l[[i]] <- dapc(AllPops.gc, pop = grp_l[[i]]$grp, n.pca = 20, n.da = my_k[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp_l[[i]]$grp, n.pca = 3, n.da = 2)
@@ -329,7 +376,70 @@ names(grp.labs) <- my_k
 
 my_df$pop <- factor(my_df$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
 
-my_df[ my_df$K == 2 & my_df$Group == 2, "Group"]
+# my_df0$Group <- as.character(my_df0$Group)
+# my_df$Group <- as.character(my_df$Group)
+# 
+# my_df0[ my_df0$K == 10 & my_df0$Group == 1, "Group"] <- "A"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 2, "Group"] <- "B"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 3, "Group"] <- "C"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 4, "Group"] <- "D"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 5, "Group"] <- "E"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 6, "Group"] <- "F"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 7, "Group"] <- "G"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 8, "Group"] <- "H"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 9, "Group"] <- "I"
+# my_df0[ my_df0$K == 10 & my_df0$Group == 10, "Group"] <- "J"
+# 
+# my_df[ my_df$K == 10 & my_df$Group == 1, "Group"] <- "A"
+# my_df[ my_df$K == 10 & my_df$Group == 2, "Group"] <- "B"
+# my_df[ my_df$K == 10 & my_df$Group == 3, "Group"] <- "C"
+# my_df[ my_df$K == 10 & my_df$Group == 4, "Group"] <- "D"
+# my_df[ my_df$K == 10 & my_df$Group == 5, "Group"] <- "E"
+# my_df[ my_df$K == 10 & my_df$Group == 6, "Group"] <- "F"
+# my_df[ my_df$K == 10 & my_df$Group == 7, "Group"] <- "G"
+# my_df[ my_df$K == 10 & my_df$Group == 8, "Group"] <- "H"
+# my_df[ my_df$K == 10 & my_df$Group == 9, "Group"] <- "I"
+# my_df[ my_df$K == 10 & my_df$Group == 10, "Group"] <- "J"
+# 
+# my_df[ my_df$K == 11 & my_df$Group == 1, "Group"] <- "A"
+# my_df[ my_df$K == 11 & my_df$Group == 2, "Group"] <- "B"
+# my_df[ my_df$K == 11 & my_df$Group == 3, "Group"] <- "C"
+# my_df[ my_df$K == 11 & my_df$Group == 4, "Group"] <- "D"
+# my_df[ my_df$K == 11 & my_df$Group == 5, "Group"] <- "E"
+# my_df[ my_df$K == 11 & my_df$Group == 6, "Group"] <- "F"
+# my_df[ my_df$K == 11 & my_df$Group == 7, "Group"] <- "G"
+# my_df[ my_df$K == 11 & my_df$Group == 8, "Group"] <- "H"
+# my_df[ my_df$K == 11 & my_df$Group == 9, "Group"] <- "I"
+# my_df[ my_df$K == 11 & my_df$Group == 10, "Group"] <- "J"
+# my_df[ my_df$K == 11 & my_df$Group == 11, "Group"] <- "K"
+# 
+# my_df[ my_df$K == 12 & my_df$Group == 1, "Group"] <- "A"
+# my_df[ my_df$K == 12 & my_df$Group == 2, "Group"] <- "B"
+# my_df[ my_df$K == 12 & my_df$Group == 3, "Group"] <- "C"
+# my_df[ my_df$K == 12 & my_df$Group == 4, "Group"] <- "D"
+# my_df[ my_df$K == 12 & my_df$Group == 5, "Group"] <- "E"
+# my_df[ my_df$K == 12 & my_df$Group == 6, "Group"] <- "F"
+# my_df[ my_df$K == 12 & my_df$Group == 7, "Group"] <- "G"
+# my_df[ my_df$K == 12 & my_df$Group == 8, "Group"] <- "H"
+# my_df[ my_df$K == 12 & my_df$Group == 9, "Group"] <- "I"
+# my_df[ my_df$K == 12 & my_df$Group == 10, "Group"] <- "J"
+# my_df[ my_df$K == 12 & my_df$Group == 11, "Group"] <- "K"
+# my_df[ my_df$K == 12 & my_df$Group == 12, "Group"] <- "L"
+# 
+# my_df[ my_df$K == 13 & my_df$Group == 1, "Group"] <- "A"
+# my_df[ my_df$K == 13 & my_df$Group == 2, "Group"] <- "B"
+# my_df[ my_df$K == 13 & my_df$Group == 3, "Group"] <- "C"
+# my_df[ my_df$K == 13 & my_df$Group == 4, "Group"] <- "D"
+# my_df[ my_df$K == 13 & my_df$Group == 5, "Group"] <- "E"
+# my_df[ my_df$K == 13 & my_df$Group == 6, "Group"] <- "F"
+# my_df[ my_df$K == 13 & my_df$Group == 7, "Group"] <- "G"
+# my_df[ my_df$K == 13 & my_df$Group == 8, "Group"] <- "H"
+# my_df[ my_df$K == 13 & my_df$Group == 9, "Group"] <- "I"
+# my_df[ my_df$K == 13 & my_df$Group == 10, "Group"] <- "J"
+# my_df[ my_df$K == 13 & my_df$Group == 11, "Group"] <- "K"
+# my_df[ my_df$K == 13 & my_df$Group == 12, "Group"] <- "L"
+# my_df[ my_df$K == 13 & my_df$Group == 13, "Group"] <- "M"
+
 
 p3 <- ggplot(my_df, aes(x = Sample, y = Posterior, fill = Group))
 p3 <- p3 + geom_bar(stat = "identity")
@@ -340,7 +450,7 @@ p3 <- p3 + ylab("Posterior membership probability")
 p3 <- p3 + theme(legend.position='none')
 #p3 <- p3 + scale_color_brewer(palette="Paired")
 p3 <- p3 + scale_fill_manual(values=c(col_vector))
-p3 <- p3 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
+p3 <- p3 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),panel.spacing.x=unit(0.1, "lines"))
 p3
 
 ggarrange(ggarrange(p1,
@@ -418,7 +528,7 @@ p4 <- ggplot(dapc.results, aes(x=Sample, y=Posterior_membership_probability, fil
 p4 <- p4 + geom_bar(stat='identity') 
 p4 <- p4 + scale_fill_manual(values = col_vector) 
 p4 <- p4 + facet_grid(~Original_Pop, scales = "free")
-p4 <- p4 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
+p4 <- p4 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8), panel.spacing.x=unit(0.1, "lines"))
 p4
 
 
@@ -477,3 +587,4 @@ replace(my.pch,my.pch==21, 19)
 
 # inds="none" to remove names
 plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms)
+#plot_poppr_msn(AllPops.gc, msn, palette=my.cols.ms)
