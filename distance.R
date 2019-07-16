@@ -24,7 +24,7 @@ load("dips.gc.RData")
 load("trips.gc.RData") # trips.gc
 distmat.trips <- as.matrix(dist(trips.gc))
 labels(distmat.trips)
-
+distmat.trips["C43-A_3","S03-A_1"]
 ############################
 # within-MLG apo distances #
 ############################
