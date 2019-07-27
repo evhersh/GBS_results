@@ -102,6 +102,10 @@ pie(rep(1,n), col=sample(col_vector, n))
 
 cols <- brewer.pal(n = nPop(AllPops.gc), name = "Paired")
 
+# allele frequencies
+
+all.freqs <- tab(AllPops.gc, freq = TRUE)
+all.freqs[50:100, 50:100]
 ###################
 # data conversion #
 ###################
@@ -186,15 +190,17 @@ simrel_pair <- as.dist(diss_mat)
 
 # calculate raw euclidian distance
 dist <- dist(AllPops.gc)
-
+dist0 <- dist(dips.gc)
 # assign MLG's using raw euclidian distance from dist() [above]
 fstats <- filter_stats(AllPops.gc, distance=dist, plot=TRUE)
+fstats0 <- filter_stats(dips.gc, distance=dist0, plot=TRUE)
 
 # looks like this gives the same clone mlg assignments as my IBS stuff
-mlg.filter(AllPops.gc, distance=dist) <- 100
-
+mlg.filter(AllPops.gc, distance=dist) <- 100 # 100-140 is the plateau for 10 MLGs
+mlg.filter(dips.gc, distance=dist0) <- 105 # after 70 C59 clumps together, after 100 other sexual pops start to clump
 
 mlg.table(AllPops.gc)
+mlg.table(dips.gc)
 
 #mll(AllPops.gc)
 
@@ -217,11 +223,20 @@ my.ploidy <-replace(my.ploidy,my.ploidy==21, 3)
 my.ploidy <-replace(my.ploidy,my.ploidy==17, 2)
 my.ploidy[29] <- 4
 my.ploidy
+apo.ploidy <- my.ploidy[my.ploidy>2]
+
 ## tabcount is a matrix pop x alleles, counting alleles per pop
 tabcount <- apply(tab(AllPops.gc), 2, tapply, pop(AllPops.gc), sum, na.rm=FALSE)
 AllPops.gp <- new("genpop", tabcount, type="codom", ploidy=my.ploidy)
 summary(AllPops.gp)
 popNames(AllPops.gp)
+
+tabcount2 <- apply(tab(apos.gc), 2, tapply, pop(apos.gc), sum, na.rm=FALSE)
+apos.gp <- new("genpop", tabcount2, type="codom", ploidy=apo.ploidy)
+summary(apos.gp)
+popNames(apos.gp)
+
+dips.gp <- genind2genpop(dips.gc, pop=~pop)
 
 pal <- private_alleles(AllPops.gp, level="population", report="data.frame")
 
@@ -236,6 +251,8 @@ ggplot(pal) + geom_boxplot(aes(x=population, y= count))
 hookeri.amova <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1)
 hookeri.amova.cc <- poppr.amova(AllPops.gc, ~ms/pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
 hookeri.amova.cc.pop <- poppr.amova(AllPops.gc, ~pop, within=FALSE, cutoff = 0.1, clonecorrect = TRUE)
+
+amova.dips <- poppr.amova(dips.gc, ~pop, cutoff=0.1)
 
 # pop_combinations <- combn(popNames(AllPops.gc), 2)
 # amova_list.cc <- apply(pop_combinations, MARGIN = 2, function(i) poppr.amova(AllPops.gc[pop = i], ~pop, within=FALSE, cutoff=0.1, clonecorrect = TRUE))
@@ -490,7 +507,7 @@ scatter(hookeri.dapc.ms, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = 
 # all pops, but color by ms
 setPop(AllPops.gc) <- ~pop
 hookeri.dapc.msp <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
-scatter(hookeri.dapc.msp, grp = AllPops.gc$strata$ms, cex = 2, legend = TRUE, clabel = T,cstar=0, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=c(17,19))
+scatter(hookeri.dapc.msp, grp = AllPops.gc$strata$ms, cex = 2, legend = TRUE, clabel = T,cstar=0, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=c(17,19), col=cols.ms)
 
 # for pops (all)
 setPop(AllPops.gc) <- ~pop
@@ -502,6 +519,19 @@ scatter(hookeri.dapc, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = F, 
 noYK.gc <- popsub(AllPops.gc, blacklist=c("C59-S", "SM-A", "C23-A", "S03-A"))
 hookeri.dapc2 <- dapc(noYK.gc, grp=noYK.gc$pop, n.pca=20, n.da=100)
 scatter(hookeri.dapc2, grp = noYK.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=my.pch.sub)
+
+# apo only pops
+setPop(apos.gc) <- ~pop
+apos.gc$pop <- factor(apos.gc$pop, levels=c("L62-A", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A"))
+apo.dapc <- dapc(apos.gc, grp=apos.gc$grp, n.pca=10, n.da=100)
+scatter(apo.dapc, grp = apos.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75)
+
+# sex only pops
+setPop(dips.gc) <- ~pop
+dips.gc$pop <- factor(dips.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S","L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L45-S", "C59-S"))
+dips.dapc <- dapc(dips.gc, grp=dips.gc$grp)
+scatter(dips.dapc, grp = dips.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75)
+
 
 # loadings
 contib <- loadingplot(hookeri.dapc$var.contr, axis=1, thres=0.0003, lab.jitter = 1)
@@ -518,6 +548,10 @@ dapc.results <- as.data.frame(hookeri.dapc$posterior)
 dapc.results$pop <- pop(AllPops.gc)
 dapc.results$indNames <- rownames(dapc.results)
 
+dapc.results.apo <- as.data.frame(apo.dapc$posterior)
+dapc.results.apo$pop <- pop(apos.gc)
+dapc.results.apo$indNames <- rownames(dapc.results.apo)
+
 library(reshape2)
 dapc.results <- melt(dapc.results)
 
@@ -530,6 +564,19 @@ p4 <- p4 + scale_fill_manual(values = col_vector)
 p4 <- p4 + facet_grid(~Original_Pop, scales = "free")
 p4 <- p4 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8), panel.spacing.x=unit(0.1, "lines"))
 p4
+
+library(reshape2)
+dapc.results.apo <- melt(dapc.results.apo)
+
+colnames(dapc.results.apo) <- c("Original_Pop","Sample","Assigned_Pop","Posterior_membership_probability")
+
+# Plot posterior assignments from DAPC (how is this different from Structure?)
+p5 <- ggplot(dapc.results.apo, aes(x=Sample, y=Posterior_membership_probability, fill=Assigned_Pop))
+p5 <- p5 + geom_bar(stat='identity') 
+p5 <- p5 + scale_fill_manual(values = col_vector) 
+p5 <- p5 + facet_grid(~Original_Pop, scales = "free")
+p5 <- p5 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8), panel.spacing.x=unit(0.1, "lines"))
+p5
 
 
 # create figure
@@ -556,10 +603,28 @@ p4
 # plot(theTree)
 # add.scale.bar(length = 0.05)
 
-# for inds
+# for inds, all
 hookeri.nj <- aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
 
-# for pops
+plot.phylo(hookeri.nj, cex=0.8)
+nodelabels(hookeri.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
+           font = 3, xpd = TRUE)
+
+# inds, apo's only
+apo.inds.nj <- aboot(apos.gc, dist=provesti.dist, sample=200, tree="nj", cutoff=50, quiet=TRUE)
+
+plot.phylo(apo.inds.nj, cex=0.8)
+nodelabels(apo.inds.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
+           font = 3, xpd = TRUE)
+
+# inds, dips only
+dips.inds.nj <- aboot(dips.gc, dist=provesti.dist, sample=200, tree="nj", cutoff=50, quiet=TRUE)
+
+plot.phylo(dips.inds.nj, cex=0.8, tip.color = cols.ms[dips.gc$strata$ms])
+nodelabels(dips.inds.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
+           font = 3, xpd = TRUE)
+
+# for pops (all)
 hookpop.nj <- aboot(AllPops.gp, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
 
 plot.phylo(hookpop.nj, cex=0.8, tip.color = my.cols.ms)
@@ -567,24 +632,48 @@ nodelabels(hookpop.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
            font = 3, xpd = TRUE)
 axisPhylo(3)
 
+# for pops (apos)
+apopop.nj <- aboot(apos.gp, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
+
+plot.phylo(apopop.nj, cex=0.8)
+nodelabels(apopop.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
+           font = 3, xpd = TRUE)
+axisPhylo(3)
+
+cols.ms <- c("coral3","cornflowerblue")
+
+# for pops (dips)
+dipspop.nj <- aboot(dips.gp, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
+
+plot.phylo(dipspop.nj, cex=0.8)
+nodelabels(dipspop.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
+           font = 3, xpd = TRUE)
+axisPhylo(3)
+
 # AllPops.gc %>%
 #   genind2genpop(pop = ~pop) %>%
 #   aboot(cutoff = 50, quiet = FALSE, sample = 1000, distance = nei.dist)
 
+# dips + 1 MLG each, inds
 
+#OneMLG.gc
+oneMLG.nj <- aboot(OneMLG.gc, dist=provesti.dist, sample=200, tree="nj", cutoff=50, quiet=TRUE)
 
+plot.phylo(oneMLG.nj, cex=0.8, tip.color = cols.ms[OneMLG.gc$strata$ms])
+nodelabels(oneMLG.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
+           font = 3, xpd = TRUE)
+axisPhylo(3)
 
 #######
 # MSN #
 #######
 setPop(AllPops.gc, ~ms/pop)
-msn <- poppr.msn(AllPops.gc, dist, showplot = FALSE)
+msn <- poppr.msn(AllPops.gc, ddist, showplot = FALSE)
 
 # inds="none" to remove names
-my.cols.ms <- replace(my.pch,my.pch==19, "red")
-my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "blue")
+my.cols.ms <- replace(my.pch,my.pch==19, "cornflowerblue")
+my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "coral3")
 replace(my.pch,my.pch==21, 19)
 
 # inds="none" to remove names
-plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms)
-#plot_poppr_msn(AllPops.gc, msn, palette=my.cols.ms)
+plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms)#plot_poppr_msn(AllPops.gc, msn, palette=my.cols.ms)

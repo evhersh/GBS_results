@@ -74,7 +74,20 @@ ploidy.infotable[60:90,30:60]
 # looks at multi-locus lineages
 mll(AllPops.gc)
 
+dips.gc <- popsub(AllPops.gc, sublist=sex.list, drop=FALSE)
+apos.gc <- popsub(AllPops.gc, sublist=apo.list, drop=FALSE)
 
+#OnePerMLGapos.gc <- apos.gc[apo.keep.list]
+
+#OneMLG.gi <- repool(dips.gc, OnePerMLGapos.gc)
+#OneMLG.gc <- as.genclone(OneMLG.gi)
+#OneMLG.inds <- indNames(OneMLG.gc)
+
+OneMLG.gc <- AllPops.gc[OneMLG.inds]
+
+save(OneMLG.gc, file="OneMLG.gc.RData")
+
+load("OneMLG.gc.RData")
 ####################
 # make more colors #
 ####################
@@ -90,7 +103,10 @@ cols <- brewer.pal(n = nPop(AllPops.gc), name = "Paired")
 # data conversion #
 ###################
 
+# use vcfkeepsamples from vcflib to extract the inds from OneMLG.inds
+
 # convert for polyrelatedness
+
 my_gt <- extract.gt(vcf, convertNA = FALSE)
 my_gt <- t(my_gt)
 

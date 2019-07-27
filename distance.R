@@ -122,4 +122,42 @@ gg.wInPopDists <- ggplot(data=wInPopDists, aes(x=dist, fill=ms))+
   geom_vline(aes(xintercept=54.67), color="black", linetype="dashed")+
   labs(x="Pairwise euclidian distance", y="Density")
 
+gg.wInPopDists <- ggplot(data=wInPopDists, aes(x=dist, fill=ms))+
+  geom_histogram(aes(y=..density..), bins=50, alpha=0.6, color="black", position="identity", size=.75)+
+  theme_classic()+
+  scale_fill_manual(values=c("red", "blue"), name="Mating System", labels=c("Apomictic", "Sexual"))+
+  geom_density(alpha=.3)+
+  xlim(0,160)+
+  geom_vline(aes(xintercept=54.67), color="black", linetype="dashed")+
+  labs(x="Pairwise euclidian distance", y="Density")
+
 #scale_x_continuous(breaks=seq(0.70, 1, 0.025))+
+
+
+
+#### different distances ####
+
+hist(dist)
+
+ddist <- prevosti.dist(AllPops.gc)
+ddist <- prevosti.dist(AllPops.gc)
+ddist.dips <- prevosti.dist(dips.gc)
+
+hist(ddist)
+
+filter_stats(AllPops.gc, distance=ddist, plot=TRUE)
+filter_stats(AllPops.gc, distance=dist, plot=TRUE)
+filter_stats(dips.gc, distance=ddist.dips, plot=TRUE)
+
+
+# 0.09 - 0.13 = 49 MLGs
+mlg.filter(AllPops.gc, distance=ddist) <- 0.1
+mlg.table(AllPops.gc)
+
+mlg.filter(AllPops.gc, distance=ddist) <- 
+mlg.table(AllPops.gc)
+
+ddist.apos.df <- as.data.frame(ddist.apos)
+
+ggplot(data=ddist.apos.df)+
+  geom_histogram()

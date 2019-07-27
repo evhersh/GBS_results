@@ -25,7 +25,8 @@ library(hierfstat)
 load("unsplit.gc.RData")
 
 # calculate distance
-distmat.unsplit <- as.matrix(dist(unsplit.gc))
+#distmat.unsplit <- as.matrix(dist(unsplit.gc))
+distmat.unsplit <- as.matrix(prevosti.dist(unsplit.gc))
 labels(distmat.unsplit)
 
 # C23
