@@ -25,14 +25,17 @@ load("trips.gc.RData")
 # calculate raw euclidian distance
 dist <- dist(AllPops.gc)
 dist2 <- dist(apos.gc)
+ddist2 <- prevosti.dist(AllPops.gc)
 dist2.mat <- as.matrix(dist(apos.gc))
 ddist.apos <- prevosti.dist(apos.gc)
+MULTI.ddist.apos <- prevosti.dist(MULTI.apos.gc)
 
 #dist.trips <- dist(trips.gc)
 
 # assign MLG's using raw euclidian distance from dist() [above]
 fstats <- filter_stats(AllPops.gc, distance=dist, plot=TRUE)
 fstats2 <- filter_stats(apos.gc, distance=ddist.apos, plot=TRUE)
+fstats3 <- filter_stats(MULTI.apos.gc, distance=MULTI.ddist.apos, plot=TRUE)
 #fstats.trips <- filter_stats(trips.gc, distance=dist.trips, plot=TRUE)
 
 # looks like this gives the same clone mlg assignments as my IBS stuff

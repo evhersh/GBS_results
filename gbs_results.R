@@ -69,15 +69,15 @@ col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_co
 
 
 ## @knitr MLGs
-
+load("AllPops.gc.RData")
 # calculate raw euclidian distance
-dist <- dist(AllPops.gc)
+ddist2 <- prevosti.dist(AllPops.gc)
 
 # assign MLG's using raw euclidian distance from dist() [above]
-fstats <- filter_stats(AllPops.gc, distance=dist, plot=TRUE)
+fstats <- filter_stats(AllPops.gc, distance=ddist2, plot=TRUE)
 
 # looks like this gives the same clone mlg assignments as my IBS stuff
-mlg.filter(AllPops.gc, distance=dist) <- 100
+mlg.filter(AllPops.gc, distance=ddist2) <- 0.095
 
 mlgtab <- mlg.table(AllPops.gc)
 
@@ -93,14 +93,14 @@ my.pch.sub <- my.pch[-c(30,29,28,26)]
 setPop(AllPops.gc) <- ~ms
 AllPops.gc$pop <- factor(AllPops.gc$pop, levels=c("S", "A"))
 hookeri.dapc.ms <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
-scatter(hookeri.dapc.ms, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = T, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75)
+scatter(hookeri.dapc.ms, grp = AllPops.gc$pop, cex = 2, legend = TRUE, clabel = T, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, col=c("red", "blue"))
 
 ## @knitr DAPC.popms
 
 # all pops, but color by ms
 setPop(AllPops.gc) <- ~pop
 hookeri.dapc.msp <- dapc(AllPops.gc, grp=AllPops.gc$grp, n.pca=20, n.da=100)
-scatter(hookeri.dapc.msp, grp = AllPops.gc$strata$ms, cex = 2, legend = TRUE, clabel = T,cstar=0, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=c(17,19))
+scatter(hookeri.dapc.msp, grp = AllPops.gc$strata$ms, cex = 2, legend = TRUE, clabel = T,cstar=0, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=c(17,19), col=c("red", "blue"))
 
 ## @knitr DAPC.popall
 
@@ -256,17 +256,17 @@ p4
 
 
 ## @knitr MSN
-
+load("AllPops.gc.RData")
 setPop(AllPops.gc, ~ms/pop)
-msn <- poppr.msn(AllPops.gc, dist, showplot = FALSE)
+msn <- poppr.msn(AllPops.gc, ddist2, showplot = FALSE)
 
 # inds="none" to remove names
-my.cols.ms <- replace(my.pch,my.pch==19, "red")
-my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "blue")
+my.cols.ms <- replace(my.pch,my.pch==19, "blue")
+my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "red")
 replace(my.pch,my.pch==21, 19)
 
 # inds="none" to remove names
-plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms)
+plot_poppr_msn(AllPops.gc, msn, inds="none", palette=my.cols.ms, pop.leg = FALSE, size.leg = FALSE)
 
 
 

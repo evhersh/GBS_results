@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::read_chunk("gbs_results.R")
 ```
 
-```{r echo=FALSE, cache=TRUE, results="hide"}
+```{r echo=FALSE, cache=FALSE, results="hide"}
 <<load>>
 ```
 
@@ -65,7 +65,7 @@ vcffilter -f "QUAL / DP > 0.25" filter5.vcf > final.filtered.snps.vcf
 
 ## Clone identification
 
-Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using the basic R dist() function with "euclidean" method) as the within-population pairwise comparisons are always between individuals of the same ploidy. 
+Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using prevosti.dist()) as the within-population pairwise comparisons are always between individuals of the same ploidy. I picked 0.95 as the MLG cutoff. 
 
 ```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
 <<MLGs>>
@@ -73,9 +73,13 @@ Using poppr, we were able to identify the same number of MLGs as the IBS (from S
 
 <br/><br/>
 
-I also calculated pairwise distances within populations and plotted them. This is similar to the IBS plot I made for my AGA poster, but using euclidian distance (raw dissimilarity) instead of IBS (% similarity). The R package I was using to calculate IBS (SNPRelate) was diploidizing my data without telling me, so I've switched to adegenet/poppr which can handle multiple ploidy levels. However, it's also worth noting that Meirmans et al (2018) report that this exact type of comparison (diploid-diploid vs polyploid-polyploid) is biased, so we should take these results with a grain of salt...
+I also calculated pairwise distances within populations and plotted them. This is similar to the IBS plot I made for my AGA poster, but using prevosti distance (raw dissimilarity) instead of IBS (% similarity). The R package I was using to calculate IBS (SNPRelate) was diploidizing my data without telling me, so I've switched to adegenet/poppr which can handle multiple ploidy levels. However, it's also worth noting that Meirmans et al (2018) report that this exact type of comparison (diploid-diploid vs polyploid-polyploid) is biased, so we should take these results with a grain of salt...
 
 ![](GGwInPopDists.png)
+
+## Map
+
+![](map05.png)
 
 ## Ploidy confirmation
 
@@ -117,15 +121,15 @@ Here's a plot of the posterior membership probabilities:
 
 ## K-means clustering
 
-This is hot off the press. I used a K-means approach from the adegenet package (following this tutorial: http://grunwaldlab.github.io/Population_Genetics_in_R/clustering_plot.html), which uses a clustering algorithm that is similar to STRUCTURE. **Plot A** below is based on 50 runs of the find.clusters algorithm, and shows that ~10-13 clusters have the lowest BIC. **Plot B** is a scatterplot of the discriminant functions (K=10), which helps us see how different the resulting clusters are. **Plot C** shows barplots of the posterior probability group assignments for K = 10-13, which helps visualize how the groups are assigned under different values of K. The K-means results are more-or-less consistent with our other findings, as they assign clones to pretty much the same groups. Keep in mind that the groups/colors are assigned arbitrarily, so the colors aren't consistent between the the different K plots at the moment (working on fixing this...).
+This is hot off the press. I used a K-means approach from the adegenet package (following this tutorial: http://grunwaldlab.github.io/Population_Genetics_in_R/clustering_plot.html), which uses a clustering algorithm that is similar to STRUCTURE. This is just looking at the apomictic individuals. **Plot A** below is based on 50 runs of the find.clusters algorithm, and shows that ~8-13 clusters have the lowest BIC. **Plot B** is a scatterplot of the discriminant functions (K=8), which helps us see how different the resulting clusters are. **Plot C** shows barplots of the posterior probability group assignments for K = 8-12, which helps visualize how the groups are assigned under different values of K. The K-means results are more-or-less consistent with our other findings, as they assign clones to pretty much the same groups.
 
 A new paper from Patrick Meirmans' group suggests that STRUCTURE is better than K-means and other clustering approaches for mixed-ploidy populations. However, this is only really a problem (for K-means) if you have low numbers of markers and missing dosage information...fortunately for us we have full dosage and tons of markers. My understanding is that DAPC is still better for us because it uses model-free methods, while STRUCTURE assumes panmixia and that markers are not linked. 
 
-![](kmeans.png)
+![](kmeans_all.png)
 
 ## MSN
 
-This is a minimum spanning network. It can apparently be a more powerful visualization tool for clonal organisms than trees. Each pie represents a MLG, and the size of the pie represents the number of individuals assigned to that MLG. Blue pies are sexual, red are apo. 
+This is a minimum spanning network. It can apparently be a more powerful visualization tool for clonal organisms than trees. Each pie represents a MLG, and the size of the pie represents the number of individuals assigned to that MLG. Blue pies are apo, red are sexual. 
 ```{r, fig.height=6, fig.width=8, cache=TRUE, echo=FALSE, results="hide"}
 <<MSN>>
 ```
@@ -179,14 +183,11 @@ hookeri.poppr.pop[-c(4,5,10,15)]
 
 ## NJ Tree on populations
 
-Here's a NJ tree on the populations. It uses provesti distance, which is probably biased, but it's a start...
+Here's a NJ tree of all sexual individuals (red) and one representative from each MLG (blue). It uses provesti distance, which is probably biased, but it's a start...
 
-![](nj_pop.png)
+![](oneMLG_tree.png)
 
 <!-- Here's a slightly different one... -->
 
 <!-- ![](Nei_tree.png) -->
 
-## Map
-
-![](map02.png)

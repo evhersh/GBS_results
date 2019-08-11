@@ -70,6 +70,69 @@ my_df00 <- as.data.frame(dapc00_l[[ length(dapc00_l) ]]$ind.coord)
 my_df00$Group <- dapc00_l[[ length(dapc00_l) ]]$grp
 head(my_df00)
 
+my_df00$Group <- as.character(my_df00$Group)
+
+# k8
+# G-B
+my_df00[my_df00$Group == 1, "Group"] <- "A"
+my_df00[my_df00$Group == 2, "Group"] <- "G"
+my_df00[my_df00$Group == 3, "Group"] <- "C"
+my_df00[my_df00$Group == 4, "Group"] <- "D"
+my_df00[my_df00$Group == 5, "Group"] <- "E"
+my_df00[my_df00$Group == 6, "Group"] <- "F"
+my_df00[my_df00$Group == 7, "Group"] <- "B"
+my_df00[my_df00$Group == 8, "Group"] <- "H"
+
+#k9
+# my_df00[my_df00$Group == 1, "Group"] <- "B"
+# my_df00[my_df00$Group == 2, "Group"] <- "C"
+# my_df00[my_df00$Group == 3, "Group"] <- "A"
+# my_df00[my_df00$Group == 4, "Group"] <- "F"
+# my_df00[my_df00$Group == 5, "Group"] <- "G"
+# my_df00[my_df00$Group == 6, "Group"] <- "D"
+# my_df00[my_df00$Group == 7, "Group"] <- "I"
+# my_df00[my_df00$Group == 8, "Group"] <- "H"
+# my_df00[my_df00$Group == 9, "Group"] <- "E"
+
+#k10
+# my_df00[my_df00$Group == 1, "Group"] <- "J"
+# my_df00[my_df00$Group == 2, "Group"] <- "A"
+# my_df00[my_df00$Group == 3, "Group"] <- "B"
+# my_df00[my_df00$Group == 4, "Group"] <- "C"
+# my_df00[my_df00$Group == 5, "Group"] <- "E"
+# my_df00[my_df00$Group == 6, "Group"] <- "G"
+# my_df00[my_df00$Group == 7, "Group"] <- "D"
+# my_df00[my_df00$Group == 8, "Group"] <- "I"
+# my_df00[my_df00$Group == 9, "Group"] <- "F"
+# my_df00[my_df00$Group == 10, "Group"] <- "H"
+
+#k11
+# my_df00[my_df00$Group == 1, "Group"] <- "H"
+# my_df00[my_df00$Group == 2, "Group"] <- "I"
+# my_df00[my_df00$Group == 3, "Group"] <- "F"
+# my_df00[my_df00$Group == 4, "Group"] <- "J"
+# my_df00[my_df00$Group == 5, "Group"] <- "C"
+# my_df00[my_df00$Group == 6, "Group"] <- "A"
+# my_df00[my_df00$Group == 7, "Group"] <- "K"
+# my_df00[my_df00$Group == 8, "Group"] <- "E"
+# my_df00[my_df00$Group == 9, "Group"] <- "G"
+# my_df00[my_df00$Group == 10, "Group"] <- "D"
+# my_df00[my_df00$Group == 11, "Group"] <- "B"
+
+#k12
+# my_df00[my_df00$Group == 1, "Group"] <- "A"
+# my_df00[my_df00$Group == 2, "Group"] <- "J"
+# my_df00[my_df00$Group == 3, "Group"] <- "G"
+# my_df00[my_df00$Group == 4, "Group"] <- "D"
+# my_df00[my_df00$Group == 5, "Group"] <- "K"
+# my_df00[my_df00$Group == 6, "Group"] <- "F"
+# my_df00[my_df00$Group == 7, "Group"] <- "I"
+# my_df00[my_df00$Group == 8, "Group"] <- "L"
+# my_df00[my_df00$Group == 9, "Group"] <- "C"
+# my_df00[my_df00$Group == 10, "Group"] <- "B"
+# my_df00[my_df00$Group == 11, "Group"] <- "E"
+# my_df00[my_df00$Group == 12, "Group"] <- "H"
+
 p02 <- ggplot(my_df00, aes(x = LD1, y = LD2, color = Group, fill = Group))
 p02 <- p02 + geom_point(size = 4, shape = 21)
 p02 <- p02 + theme_bw()
@@ -80,7 +143,7 @@ p02 <- p02 + scale_fill_brewer(palette="Paired")
 #p02
 
 # plot 3
-my_k01 <- 8:10
+my_k01 <- 8:12
 
 grp2_l <- vector(mode = "list", length = length(my_k01))
 dapc01_l <- vector(mode = "list", length = length(my_k01))
@@ -119,16 +182,17 @@ names(grp2.labs) <- my_k01
 
 my_df01$pop <- factor(my_df01$pop, levels=c("L62-A","L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A"))
 
+# run first with both uncommented, then comment top one (and run second line) when re-making the colors
 #my_df001 <- my_df01
 my_df01 <- my_df001
 
-my_df01$Group <- as.character(my_df01$Group)
+
 my_df01$Group <- as.character(my_df01$Group)
 
-# G-B
+# G-B, C-G
 my_df01[ my_df01$K == 8 & my_df01$Group == 1, "Group"] <- "A"
-my_df01[ my_df01$K == 8 & my_df01$Group == 2, "Group"] <- "G"
-my_df01[ my_df01$K == 8 & my_df01$Group == 3, "Group"] <- "C"
+my_df01[ my_df01$K == 8 & my_df01$Group == 2, "Group"] <- "C"
+my_df01[ my_df01$K == 8 & my_df01$Group == 3, "Group"] <- "G"
 my_df01[ my_df01$K == 8 & my_df01$Group == 4, "Group"] <- "D"
 my_df01[ my_df01$K == 8 & my_df01$Group == 5, "Group"] <- "E"
 my_df01[ my_df01$K == 8 & my_df01$Group == 6, "Group"] <- "F"
@@ -136,58 +200,58 @@ my_df01[ my_df01$K == 8 & my_df01$Group == 7, "Group"] <- "B"
 my_df01[ my_df01$K == 8 & my_df01$Group == 8, "Group"] <- "H"
 
 # G B A F C D I H E
-# A-C, C-I, C-E, I-G, G-B
+# A-C, C-I, C-E, I-G, G-B, C-G
 my_df01[ my_df01$K == 9 & my_df01$Group == 1, "Group"] <- "B"
-my_df01[ my_df01$K == 9 & my_df01$Group == 2, "Group"] <- "G"
+my_df01[ my_df01$K == 9 & my_df01$Group == 2, "Group"] <- "C"
 my_df01[ my_df01$K == 9 & my_df01$Group == 3, "Group"] <- "A"
 my_df01[ my_df01$K == 9 & my_df01$Group == 4, "Group"] <- "F"
-my_df01[ my_df01$K == 9 & my_df01$Group == 5, "Group"] <- "C"
+my_df01[ my_df01$K == 9 & my_df01$Group == 5, "Group"] <- "G"
 my_df01[ my_df01$K == 9 & my_df01$Group == 6, "Group"] <- "D"
 my_df01[ my_df01$K == 9 & my_df01$Group == 7, "Group"] <- "I"
 my_df01[ my_df01$K == 9 & my_df01$Group == 8, "Group"] <- "H"
 my_df01[ my_df01$K == 9 & my_df01$Group == 9, "Group"] <- "E"
 
 # J A G B E C D I F H
-# B-A, D-G, G-B, J-H, G-C, I-J, C-J, C-F, G-B
+# B-A, D-G, G-B, J-H, G-C, I-J, C-J, C-F, G-B, C-G
 my_df01[ my_df01$K == 10 & my_df01$Group == 1, "Group"] <- "J"
 my_df01[ my_df01$K == 10 & my_df01$Group == 2, "Group"] <- "A"
 my_df01[ my_df01$K == 10 & my_df01$Group == 3, "Group"] <- "B"
-my_df01[ my_df01$K == 10 & my_df01$Group == 4, "Group"] <- "G"
+my_df01[ my_df01$K == 10 & my_df01$Group == 4, "Group"] <- "C"
 my_df01[ my_df01$K == 10 & my_df01$Group == 5, "Group"] <- "E"
-my_df01[ my_df01$K == 10 & my_df01$Group == 6, "Group"] <- "C"
+my_df01[ my_df01$K == 10 & my_df01$Group == 6, "Group"] <- "G"
 my_df01[ my_df01$K == 10 & my_df01$Group == 7, "Group"] <- "D"
 my_df01[ my_df01$K == 10 & my_df01$Group == 8, "Group"] <- "I"
 my_df01[ my_df01$K == 10 & my_df01$Group == 9, "Group"] <- "F"
 my_df01[ my_df01$K == 10 & my_df01$Group == 10, "Group"] <- "H"
 
 # F B C D E A G H I J K
-# F-A, F-H, C-F, C-I, K-G, B-I, D-J, E-I, I-B
-# my_df01[ my_df01$K == 11 & my_df01$Group == 1, "Group"] <- "H"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 2, "Group"] <- "E"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 3, "Group"] <- "F"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 4, "Group"] <- "J"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 5, "Group"] <- "B"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 6, "Group"] <- "A"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 7, "Group"] <- "K"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 8, "Group"] <- "I"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 9, "Group"] <- "C"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 10, "Group"] <- "D"
-# my_df01[ my_df01$K == 11 & my_df01$Group == 11, "Group"] <- "G"
-# 
-# 
-# 
-# my_df01[ my_df01$K == 12 & my_df01$Group == 1, "Group"] <- "A"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 2, "Group"] <- "B"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 3, "Group"] <- "C"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 4, "Group"] <- "D"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 5, "Group"] <- "E"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 6, "Group"] <- "F"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 7, "Group"] <- "G"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 8, "Group"] <- "H"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 9, "Group"] <- "I"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 10, "Group"] <- "J"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 11, "Group"] <- "K"
-# my_df01[ my_df01$K == 12 & my_df01$Group == 12, "Group"] <- "L"
+# F-A, F-H, C-F, C-I, K-G, B-I, D-J, E-I, I-B, G-B, C-G
+my_df01[ my_df01$K == 11 & my_df01$Group == 1, "Group"] <- "H"
+my_df01[ my_df01$K == 11 & my_df01$Group == 2, "Group"] <- "I"
+my_df01[ my_df01$K == 11 & my_df01$Group == 3, "Group"] <- "F"
+my_df01[ my_df01$K == 11 & my_df01$Group == 4, "Group"] <- "J"
+my_df01[ my_df01$K == 11 & my_df01$Group == 5, "Group"] <- "C"
+my_df01[ my_df01$K == 11 & my_df01$Group == 6, "Group"] <- "A"
+my_df01[ my_df01$K == 11 & my_df01$Group == 7, "Group"] <- "K"
+my_df01[ my_df01$K == 11 & my_df01$Group == 8, "Group"] <- "E"
+my_df01[ my_df01$K == 11 & my_df01$Group == 9, "Group"] <- "G"
+my_df01[ my_df01$K == 11 & my_df01$Group == 10, "Group"] <- "D"
+my_df01[ my_df01$K == 11 & my_df01$Group == 11, "Group"] <- "B"
+
+
+# B-J, I-G, E-K, H-L, C-G
+my_df01[ my_df01$K == 12 & my_df01$Group == 1, "Group"] <- "A"
+my_df01[ my_df01$K == 12 & my_df01$Group == 2, "Group"] <- "J"
+my_df01[ my_df01$K == 12 & my_df01$Group == 3, "Group"] <- "G"
+my_df01[ my_df01$K == 12 & my_df01$Group == 4, "Group"] <- "D"
+my_df01[ my_df01$K == 12 & my_df01$Group == 5, "Group"] <- "K"
+my_df01[ my_df01$K == 12 & my_df01$Group == 6, "Group"] <- "F"
+my_df01[ my_df01$K == 12 & my_df01$Group == 7, "Group"] <- "I"
+my_df01[ my_df01$K == 12 & my_df01$Group == 8, "Group"] <- "L"
+my_df01[ my_df01$K == 12 & my_df01$Group == 9, "Group"] <- "C"
+my_df01[ my_df01$K == 12 & my_df01$Group == 10, "Group"] <- "B"
+my_df01[ my_df01$K == 12 & my_df01$Group == 11, "Group"] <- "E"
+my_df01[ my_df01$K == 12 & my_df01$Group == 12, "Group"] <- "H"
 
 
 

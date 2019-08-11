@@ -226,19 +226,19 @@ my.ploidy
 apo.ploidy <- my.ploidy[my.ploidy>2]
 
 ## tabcount is a matrix pop x alleles, counting alleles per pop
-tabcount <- apply(tab(AllPops.gc), 2, tapply, pop(AllPops.gc), sum, na.rm=FALSE)
-AllPops.gp <- new("genpop", tabcount, type="codom", ploidy=my.ploidy)
+tabcount <- apply(tab(MULTI.gc), 2, tapply, pop(MULTI.gc), sum, na.rm=FALSE)
+MULTI.gp <- new("genpop", tabcount, type="codom", ploidy=my.ploidy)
 summary(AllPops.gp)
 popNames(AllPops.gp)
 
-tabcount2 <- apply(tab(apos.gc), 2, tapply, pop(apos.gc), sum, na.rm=FALSE)
-apos.gp <- new("genpop", tabcount2, type="codom", ploidy=apo.ploidy)
-summary(apos.gp)
-popNames(apos.gp)
+# tabcount2 <- apply(tab(apos.gc), 2, tapply, pop(apos.gc), sum, na.rm=FALSE)
+# apos.gp <- new("genpop", tabcount2, type="codom", ploidy=apo.ploidy)
+# summary(apos.gp)
+# popNames(apos.gp)
+# 
+# dips.gp <- genind2genpop(dips.gc, pop=~pop)
 
-dips.gp <- genind2genpop(dips.gc, pop=~pop)
-
-pal <- private_alleles(AllPops.gp, level="population", report="data.frame")
+pal <- private_alleles(MULTI.gp, level="population", report="data.frame")
 
 
 

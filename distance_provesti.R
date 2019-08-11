@@ -118,11 +118,11 @@ wInPopDists <- rbind(apo.mlg.ddists,sex.mlg.dists)
 ###### ggplot ######
 
 gg.wInPopDists <- ggplot(data=wInPopDists, aes(x=dist, fill=ms))+
-  geom_histogram(aes(y=..density..), bins=50, alpha=0.6, color="black", position="identity", size=.75)+
+  geom_histogram(aes(y=..density..), bins=100, alpha=0.6, color="black", position="identity", size=.75)+
   theme_classic()+
-  scale_fill_manual(values=c("red", "blue"), name="Mating System", labels=c("Apomictic", "Sexual"))+
+  scale_fill_manual(values=c("blue", "red"), name="Mating System", labels=c("Apomictic", "Sexual"))+
   geom_density(alpha=.3)+
-  xlim(0,0.12)+
+  xlim(0,0.22)+
   geom_vline(aes(xintercept=0.02948973), color="black", linetype="twodash", size=1.5)+
   labs(x="Pairwise euclidian distance", y="Density")
 
