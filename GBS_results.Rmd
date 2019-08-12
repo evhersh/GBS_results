@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::read_chunk("gbs_results.R")
 ```
 
-```{r echo=FALSE, cache=FALSE, results="hide"}
+```{r echo=FALSE, cache=FALSE, results="hide", include=FALSE}
 <<load>>
 ```
 
@@ -65,7 +65,7 @@ vcffilter -f "QUAL / DP > 0.25" filter5.vcf > final.filtered.snps.vcf
 
 ## Clone identification
 
-Using poppr, we were able to identify the same number of MLGs as the IBS (from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using prevosti.dist()) as the within-population pairwise comparisons are always between individuals of the same ploidy. I picked 0.95 as the MLG cutoff. 
+Using poppr, we were able to identify the same number of clones (aka multilocus genotypes - MLGs) as the identity by state (IBS - from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using prevosti.dist()) as the within-population pairwise comparisons are always between individuals of the same ploidy. I picked 0.95 as the MLG cutoff. 
 
 ```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
 <<MLGs>>
@@ -73,13 +73,15 @@ Using poppr, we were able to identify the same number of MLGs as the IBS (from S
 
 <br/><br/>
 
-I also calculated pairwise distances within populations and plotted them. This is similar to the IBS plot I made for my AGA poster, but using prevosti distance (raw dissimilarity) instead of IBS (% similarity). The R package I was using to calculate IBS (SNPRelate) was diploidizing my data without telling me, so I've switched to adegenet/poppr which can handle multiple ploidy levels. However, it's also worth noting that Meirmans et al (2018) report that this exact type of comparison (diploid-diploid vs polyploid-polyploid) is biased, so we should take these results with a grain of salt...
+I also calculated pairwise distances within MLGs (apos) and populations (sexuals) and plotted them. This is similar to the IBS plot I made for my AGA poster, but using prevosti distance (raw dissimilarity) instead of identity by state (% similarity). The R package I was using to calculate IBS (SNPRelate) was diploidizing my data without telling me, so I've switched to adegenet/poppr which can handle multiple ploidy levels. The dashed line represents the mean distance between replicate pairs (as a proxy for error-rate), which falls right on top of our within-clone distance peak, which indicates to me that clones are pretty darned identical to each other. There's also a nice separation between the apo and sexual peaks, which gives me confidence that there's a clear separation between things that we're calling "clones" and everything else. Note that there are a few red bars on the blue (apo) side of the plot...these are the sexual individuals from the Yukon population, which are most likely inbred / bottlenecked due to being disjunct from the rest of the sexual range for untold generations...
+
+It's also worth noting that Meirmans et al (2018) report that this exact type of comparison (diploid-diploid vs polyploid-polyploid) is biased, so we should take these results with a grain of salt...
 
 ![](GGwInPopDists.png)
 
 ## Map
 
-![](map05.png)
+![](map07.png)
 
 ## Ploidy confirmation
 
@@ -125,11 +127,14 @@ This is hot off the press. I used a K-means approach from the adegenet package (
 
 A new paper from Patrick Meirmans' group suggests that STRUCTURE is better than K-means and other clustering approaches for mixed-ploidy populations. However, this is only really a problem (for K-means) if you have low numbers of markers and missing dosage information...fortunately for us we have full dosage and tons of markers. My understanding is that DAPC is still better for us because it uses model-free methods, while STRUCTURE assumes panmixia and that markers are not linked. 
 
+These results are more-or-less congruent with the MLG designation based on genetic distance. When K=8, the BC and SK pops are grouped together, as well as the L62 apo + the one-off from L39 (these are different clones using genetic distance cutoffs). As you start trying to split the apos into more groups, it attempts to break up the big MLG (in blue), which could indicate a) that there are actually two closely related clones within that MLG (decreasing the distance cutoff does eventually split that MLG...) or b) those two groups aren't really different from one another (as supported by blue and lilac being right on top of each other when plotting LD1+2 under K=9-12).
+
 ![](kmeans_all.png)
 
 ## MSN
 
 This is a minimum spanning network. It can apparently be a more powerful visualization tool for clonal organisms than trees. Each pie represents a MLG, and the size of the pie represents the number of individuals assigned to that MLG. Blue pies are apo, red are sexual. 
+
 ```{r, fig.height=6, fig.width=8, cache=TRUE, echo=FALSE, results="hide"}
 <<MSN>>
 ```
@@ -184,6 +189,8 @@ hookeri.poppr.pop[-c(4,5,10,15)]
 ## NJ Tree on populations
 
 Here's a NJ tree of all sexual individuals (red) and one representative from each MLG (blue). It uses provesti distance, which is probably biased, but it's a start...
+
+This shows (similar to the above MSN) that the apos form two groups that can be traced back to two branches on the tree. One interpretation is that all sampled MLGs had two sexual origins, but I don't really buy that. For one, the lengths of the apo branches are quite long, about on par with the lengths between sexual individuals. I find it hard to believe that apo lineages would accumulate that many differences due to somatic mutation alone. Also, it's quite likely that we didn't sample the sexual populations of origin for these apos (probably because they no longer exist...?), which would make it quite difficult to reconstruct origins (using these data at least...).
 
 ![](oneMLG_tree.png)
 

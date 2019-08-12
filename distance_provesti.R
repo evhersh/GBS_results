@@ -124,7 +124,7 @@ gg.wInPopDists <- ggplot(data=wInPopDists, aes(x=dist, fill=ms))+
   geom_density(alpha=.3)+
   xlim(0,0.22)+
   geom_vline(aes(xintercept=0.02948973), color="black", linetype="twodash", size=1.5)+
-  labs(x="Pairwise euclidian distance", y="Density")
+  labs(x="Pairwise prevosti distance", y="Density")
 
 gg.wInMLGdists <- ggplot(data=apo.mlg.ddists, aes(x=all.mlg.ddists, fill=ms))+
   geom_histogram(aes(y=..density..), bins=50, color="black", size=.75)+
@@ -146,7 +146,7 @@ gg.wInMLGdists <- ggplot(data=apo.mlg.ddists, aes(x=all.mlg.ddists, fill=ms))+
 hist(dist)
 
 ddist <- prevosti.dist(AllPops.gc)
-ddist <- prevosti.dist(AllPops.gc)
+
 ddist.dips <- prevosti.dist(dips.gc)
 
 hist(ddist)
