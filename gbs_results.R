@@ -70,18 +70,28 @@ col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_co
 
 ## @knitr MLGs
 load("AllPops.gc.RData")
+apo.list <- c("C23-A", "C27-A", "C43-A", "C85-A", "C86-A", "C87-A", "C88-A", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A", "L45-A", "L62-A", "S03-A", "SM-A")
+sex.list <- c("B42-S", "B46-S", "B49-S", "B53-S", "B60-S", "C59-S", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L45-S", "L62-S")
 # calculate raw euclidian distance
 ddist2 <- prevosti.dist(AllPops.gc)
 
 # assign MLG's using raw euclidian distance from dist() [above]
-fstats <- filter_stats(AllPops.gc, distance=ddist2, plot=TRUE)
-
+fstats <- filter_stats(AllPops.gc, distance=ddist2, plot=TRUE, stats="THRESHOLD")
+cutoff_predictor(fstats$farthest)
 # looks like this gives the same clone mlg assignments as my IBS stuff
-mlg.filter(AllPops.gc, distance=ddist2) <- 0.095
+mlg.filter(AllPops.gc, distance=ddist2) <- 0.1
 
 mlgtab <- mlg.table(AllPops.gc)
+#table.value(mlgtab)
 
+apo.table <- mlg.table(AllPops.gc, sublist=apo.list, plot=FALSE)
 
+apo.table.melt <- melt(apo.table)
+
+ggplot(subset(apo.table.melt, value>0), aes(x=Var1, y=Var2))+
+  geom_point(aes(size=value), shape=21, colour="black", fill="cornflowerblue")+
+  labs(x="population", y="MLG", size="# of individuals", title="Apo MLGs by Population")+
+  scale_size_area(max_size=15)
 
 
 ## @knitr DAPC.ms

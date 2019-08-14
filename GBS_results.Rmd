@@ -65,7 +65,7 @@ vcffilter -f "QUAL / DP > 0.25" filter5.vcf > final.filtered.snps.vcf
 
 ## Clone identification
 
-Using poppr, we were able to identify the same number of clones (aka multilocus genotypes - MLGs) as the identity by state (IBS - from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using prevosti.dist()) as the within-population pairwise comparisons are always between individuals of the same ploidy. I picked 0.95 as the MLG cutoff. 
+Using poppr, we were able to identify the same number of clones (aka multilocus genotypes - MLGs) as the identity by state (IBS - from SNPRelate), but automatically and with the full ploidy information. One thing to note is that it grouped the sexual Yukon pop into the same MLG, which makes sense given that they had higher IBS values. The determination of MLGs in the apo's should not be biased by the distance metric used (I'm using prevosti.dist()) as the within-population pairwise comparisons are always between individuals of the same ploidy. I picked 0.1 as the MLG cutoff. The number of MLGs remains stable from around 0.09 - 0.13. 
 
 ```{r, fig.height=7, fig.width=10, cache=TRUE, echo=FALSE}
 <<MLGs>>

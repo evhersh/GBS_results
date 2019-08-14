@@ -33,13 +33,14 @@ MULTI.ddist.apos <- prevosti.dist(MULTI.apos.gc)
 #dist.trips <- dist(trips.gc)
 
 # assign MLG's using raw euclidian distance from dist() [above]
-fstats <- filter_stats(AllPops.gc, distance=dist, plot=TRUE)
+fstats <- filter_stats(AllPops.gc, distance=ddist2, plot=TRUE, stats="THRESHOLD")
+sapply(fstats, cutoff_predictor)
 fstats2 <- filter_stats(apos.gc, distance=ddist.apos, plot=TRUE)
 fstats3 <- filter_stats(MULTI.apos.gc, distance=MULTI.ddist.apos, plot=TRUE)
 #fstats.trips <- filter_stats(trips.gc, distance=dist.trips, plot=TRUE)
 
 # looks like this gives the same clone mlg assignments as my IBS stuff
-mlg.filter(AllPops.gc, distance=ddist) <- 0.1
+mlg.filter(AllPops.gc, distance=ddist2) <- 0.1
 mlg.table(AllPops.gc)
 
 mlg.filter(apos.gc, distance=ddist.apos) <- 0.13
@@ -58,9 +59,19 @@ sex.list <- c("B42-S", "B46-S", "B49-S", "B53-S", "B60-S", "C59-S", "L05-S", "L0
 ApoPops.gc <- popsub(AllPops.gc, sublist=apo.list, drop=FALSE)
 mlg.filter(ApoPops.gc, distance=ddist.apos) <- 0.13
 
+sapply(pthresh, cutoff_predictor)
 
-apo.crosspop <- mlg.crosspop(AllPops.gc, sublist=apo.list)
-mlg.table(AllPops.gc, sublist=apo.list)
+apo.crosspop <- mlg.crosspop(AllPops.gc, sublist=apo.list, df=TRUE)
+apo.table <- mlg.table(AllPops.gc, sublist=apo.list)
+
+table.value(apo.table, col.labels=colnames(apo.table))
+
+apo.table.melt <- melt(apo.table)
+
+ggplot(subset(apo.table.melt, value>0), aes(x=Var1, y=Var2))+
+  geom_point(aes(size=value), shape=21, colour="black", fill="cornflowerblue")+
+  labs(x="population", y="MLG")+
+  scale_size_area(max_size=15)
 
 apo.vec <- mlg.vector(ApoPops.gc)
 mlgIDs <- mlg.id(ApoPops.gc)
@@ -80,12 +91,12 @@ hist(mlg103.dist)
 mlg103.mat <- as.matrix(dist(mlg103.gc))
 mlg103.mat["L06-A_1",]
 
-# mlg 4
-mlg4.gc <- ApoPops.gc[apo.vec==4]
-mlg4.dist <- dist(mlg4.gc)
-hist(mlg4.dist)
-mlg4.mat <- as.matrix(dist(mlg4.gc))
-mlg4.mat["S03-A_1",]
+# mlg 7
+mlg7.gc <- ApoPops.gc[apo.vec==7]
+mlg7.dist <- dist(mlg7.gc)
+hist(mlg7.dist)
+mlg7.mat <- as.matrix(dist(mlg7.gc))
+mlg7.mat["S03-A_1",]
 
 # mlg 12
 mlg12.gc <- ApoPops.gc[apo.vec==12]
@@ -93,11 +104,11 @@ mlg12.dist <- dist(mlg12.gc)
 mlg12.mat <- as.matrix(dist(mlg12.gc))
 mlg12.mat["SM-A_1",]
 
-# mlg 55
-mlg55.gc <- ApoPops.gc[apo.vec==55]
-mlg55.dist <- dist(mlg55.gc)
-mlg55.mat <- as.matrix(dist(mlg55.gc))
-mlg55.mat["C43-A_1",]
+# mlg 52
+mlg52.gc <- ApoPops.gc[apo.vec==52]
+mlg52.dist <- dist(mlg52.gc)
+mlg52.mat <- as.matrix(dist(mlg52.gc))
+mlg52.mat["C43-A_1",]
 
 # mlg 91
 mlg91.gc <- ApoPops.gc[apo.vec==91]
@@ -111,11 +122,11 @@ mlg104.dist <- dist(mlg104.gc)
 mlg104.mat <- as.matrix(dist(mlg104.gc))
 mlg104.mat["L62-A_5",]
 
-# mlg 108
-mlg108.gc <- ApoPops.gc[apo.vec==108]
-mlg108.dist <- dist(mlg108.gc)
-mlg108.mat <- as.matrix(dist(mlg108.gc))
-mlg108.mat["C23-A_1",]
+# mlg 110
+mlg110.gc <- ApoPops.gc[apo.vec==110]
+mlg110.dist <- dist(mlg110.gc)
+mlg110.mat <- as.matrix(dist(mlg110.gc))
+mlg110.mat["C23-A_1",]
 
 # mlg 114
 mlg114.gc <- ApoPops.gc[apo.vec==114]
@@ -131,6 +142,8 @@ mlg105.mat["L39-A_4",]
 
 all.mlg.dists <- c(mlg57.dist,mlg103.dist,mlg4.dist,mlg12.dist,mlg55.dist,mlg91.dist,mlg104.dist,mlg108.dist,mlg114.dist)
 
+
+
 hist(all.mlg.dists)
 
 dist2.mat["L62-A_5","L39-A_4"]
@@ -139,3 +152,4 @@ dist2.mat["C43-A_1","S03-A_1"]
 ##### genclone object with pop defined as MLG
 
 addStrata(mlg57.gc, name=mlg) <- "mlg57"
+
