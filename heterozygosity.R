@@ -15,6 +15,8 @@ library(knitr)
 library(ggpubr)
 library(hierfstat)
 library(gmodels)
+library(dplyr)
+library(plotrix)
 
 # boxplot for dips (should do one box for all loci?)
 
@@ -32,11 +34,11 @@ dips.Hobs <- data.frame(group="diploid", value=dips.summary$Hobs)
 trips.Hobs <- data.frame(group="triploid", value=trips.summary$Hobs)
 tets.Hobs <- data.frame(group="tetraploid", value=tets.summary$Hobs)
 
-all.Hobs <- rbind(dips.Hobs, trips.Hobs)
+all.Hobs <- rbind(dips.Hobs, trips.Hobs, tets.Hobs)
 
 ggplot(all.Hobs, aes(x=group, y=value, fill=group))+
-  geom_boxplot(color="black")+
-  scale_fill_manual(values=c("coral3", "cornflowerblue"), name="Mating System", labels=c("Sexual", "Apomictic"))+
+  geom_violin(color="black")+
+  scale_fill_manual(values=c("coral3", "cornflowerblue", "blue"), name="Mating System", labels=c("diploid", "triploid", "tetraploid"))+
   stat_summary(fun.y=mean, colour="black", geom="point", 
                shape=18, size=3,show_guide = FALSE) +
   theme_bw()+
@@ -108,7 +110,12 @@ mlg.Hobs <- rbind(mlg57.hobs,mlg103.hobs,mlg7.hobs,mlg12.hobs,mlg52.hobs,mlg91.h
 
 mlg.Hobs$group <- factor(mlg.Hobs$group, levels=c("Dan's", "Lrmy_small", "Lrmy_big", "WY_1", "WY_4", "MT_big", "ND", "SK", "BC", "YK"))
 
+mlg.Hobs.sums <- mlg.Hobs %>%
+  na.omit() %>%
+  group_by(group) %>%
+  summarize(mean=mean(value), se=std.error(value))
 
-ggplot(mlg.Hobs, aes(x=group, y=value, fill=group))+
-  stat_summary(fun.y=mean, geom="point", na.rm=TRUE, size=4, pch=21, colour="black")+
-  stat_summary(fun.data=mean_se, geom="errorbar", na.rm=TRUE)
+ggplot(mlg.Hobs.sums, aes(x=group, y=mean, fill=group))+
+  geom_point(size=4, pch=21, colour="black")+
+  geom_errorbar(aes(x=group, ymin=mean-se, ymax=mean+se), width=0.2)
+  

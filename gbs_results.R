@@ -88,10 +88,11 @@ apo.table <- mlg.table(AllPops.gc, sublist=apo.list, plot=FALSE)
 
 apo.table.melt <- melt(apo.table)
 
-ggplot(subset(apo.table.melt, value>0), aes(x=Var1, y=Var2))+
+ggplot(subset(apo.table.melt, value>0), aes(x=Var2, y=Var1))+
   geom_point(aes(size=value), shape=21, colour="black", fill="cornflowerblue")+
   labs(x="population", y="MLG", size="# of individuals", title="Apo MLGs by Population")+
-  scale_size_area(max_size=15)
+  scale_size_area(max_size=15)+
+  theme_bw()
 
 
 ## @knitr DAPC.ms
@@ -298,3 +299,7 @@ hookeri.amova.cc
 
 load("hookeri.poppr.pop.RData")
 hookeri.poppr.pop
+
+
+
+

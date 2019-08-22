@@ -198,3 +198,10 @@ This shows (similar to the above MSN) that the apos form two groups that can be 
 
 <!-- ![](Nei_tree.png) -->
 
+## Heterozygosity
+
+I've calculated observed heterozygosity by ploidy level and by apo MLG. See plots below:
+
+![](Hobs_ploidy.png)
+
+![](Hobs_apos.png)
