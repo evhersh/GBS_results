@@ -82,6 +82,16 @@ It's also worth noting that Meirmans et al (2018) report that this exact type of
 ## Map
 
 ![](map07.png)
+## K-means clustering
+
+This is hot off the press. I used a K-means approach from the adegenet package (following this tutorial: http://grunwaldlab.github.io/Population_Genetics_in_R/clustering_plot.html), which uses a clustering algorithm that is similar to STRUCTURE. This is just looking at the apomictic individuals. **Plot A** below is based on 50 runs of the find.clusters algorithm, and shows that ~8-13 clusters have the lowest BIC. **Plot B** is a scatterplot of the discriminant functions (K=8), which helps us see how different the resulting clusters are. **Plot C** shows barplots of the posterior probability group assignments for K = 8-12, which helps visualize how the groups are assigned under different values of K. The K-means results are more-or-less consistent with our other findings, as they assign clones to pretty much the same groups.
+
+A new paper from Patrick Meirmans' group suggests that STRUCTURE is better than K-means and other clustering approaches for mixed-ploidy populations. However, this is only really a problem (for K-means) if you have low numbers of markers and missing dosage information...fortunately for us we have full dosage and tons of markers. My understanding is that DAPC is still better for us because it uses model-free methods, while STRUCTURE assumes panmixia and that markers are not linked. 
+
+These results are more-or-less congruent with the MLG designation based on genetic distance. When K=8, the BC and SK pops are grouped together, as well as the L62 apo + the one-off from L39 (these are different clones using genetic distance cutoffs). As you start trying to split the apos into more groups, it attempts to break up the big MLG (in blue), which could indicate a) that there are actually two closely related clones within that MLG (decreasing the distance cutoff does eventually split that MLG...) or b) those two groups aren't really different from one another (as supported by blue and lilac being right on top of each other when plotting LD1+2 under K=9-12).
+
+![](kmeans_all.png)
+
 
 ## Ploidy confirmation
 
@@ -121,15 +131,7 @@ Here's a plot of the posterior membership probabilities:
 
 ![](compoplot.png)
 
-## K-means clustering
 
-This is hot off the press. I used a K-means approach from the adegenet package (following this tutorial: http://grunwaldlab.github.io/Population_Genetics_in_R/clustering_plot.html), which uses a clustering algorithm that is similar to STRUCTURE. This is just looking at the apomictic individuals. **Plot A** below is based on 50 runs of the find.clusters algorithm, and shows that ~8-13 clusters have the lowest BIC. **Plot B** is a scatterplot of the discriminant functions (K=8), which helps us see how different the resulting clusters are. **Plot C** shows barplots of the posterior probability group assignments for K = 8-12, which helps visualize how the groups are assigned under different values of K. The K-means results are more-or-less consistent with our other findings, as they assign clones to pretty much the same groups.
-
-A new paper from Patrick Meirmans' group suggests that STRUCTURE is better than K-means and other clustering approaches for mixed-ploidy populations. However, this is only really a problem (for K-means) if you have low numbers of markers and missing dosage information...fortunately for us we have full dosage and tons of markers. My understanding is that DAPC is still better for us because it uses model-free methods, while STRUCTURE assumes panmixia and that markers are not linked. 
-
-These results are more-or-less congruent with the MLG designation based on genetic distance. When K=8, the BC and SK pops are grouped together, as well as the L62 apo + the one-off from L39 (these are different clones using genetic distance cutoffs). As you start trying to split the apos into more groups, it attempts to break up the big MLG (in blue), which could indicate a) that there are actually two closely related clones within that MLG (decreasing the distance cutoff does eventually split that MLG...) or b) those two groups aren't really different from one another (as supported by blue and lilac being right on top of each other when plotting LD1+2 under K=9-12).
-
-![](kmeans_all.png)
 
 ## MSN
 
