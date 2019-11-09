@@ -47,8 +47,10 @@ mlg.filter(apos.gc, distance=ddist.apos) <- 0.13
 mlg.table(apos.gc)
 
 apos.gc <- addStrata(apos.gc, apo.vec, name="mlg")
-
+apos.strata <- apos.gc$strata[,c(1,4)]
 apos.subYK.gc <- popsub(apos.gc, blacklist="SM-A")
+
+write.table(apos.strata, file = "apo_mlg.txt", sep = "\t", row.names = F, quote = F)
 
 # mlg stats
 mll(AllPops.gc)

@@ -213,7 +213,11 @@ set.seed(420)
 load("hookeri.poppr.RData")
 #hookeri.poppr <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~ms/pop/id)
 #hookeri.poppr.pop <- poppr(AllPops.gc, sample=999, clonecorrect = TRUE, strata=~pop/id)
+B53 <- popsub(AllPops.gc, "B53-S")
+B53.ia <- ia(B53, sample = 999)
 
+B46 <- popsub(AllPops.gc, "B46-S")
+B53.ia <- ia(B53, sample = 999)
 
 ###################
 # private alleles #
@@ -532,6 +536,14 @@ dips.gc$pop <- factor(dips.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", 
 dips.dapc <- dapc(dips.gc, grp=dips.gc$grp)
 scatter(dips.dapc, grp = dips.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75)
 
+# OneMLG
+pch.OneMLG <- c(17, 17, 17, 17, 17, 17, 21, 17, 17, 17, 17, 17, 17, 21, 21, 21, 21, 17, 21, 21, 21, 21, 17)
+pch.OneMLG <-replace(my.pch,my.pch==21, 19)
+setPop(OneMLG.gc) <- ~pop
+OneMLG.gc$pop <- factor(OneMLG.gc$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
+OneMLG.dapc <- dapc(OneMLG.gc, grp=OneMLG.gc$grp)
+scatter(OneMLG.dapc, grp = OneMLG.gc$pop, cex = 2, legend = TRUE, clabel = F, posi.leg = "bottomleft", scree.pca = TRUE, posi.pca = "topleft", cleg = 0.75, pch=pch.OneMLG)
+
 
 # loadings
 contib <- loadingplot(hookeri.dapc$var.contr, axis=1, thres=0.0003, lab.jitter = 1)
@@ -606,7 +618,12 @@ p5
 # for inds, all
 hookeri.nj <- aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
 
-plot.phylo(hookeri.nj, cex=0.8)
+write.tree(hookeri.nj, file = "hookeri_nj.NEWICK", append = FALSE,
+           digits = 10, tree.names = FALSE)
+
+write.nexus(hookeri.nj, file = "hookeri_nj.nex")
+
+plot.phylo(hookeri.nj, cex=0.8, tip.color = cols.ms[AllPops.gc$strata$ms])
 nodelabels(hookeri.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
            font = 3, xpd = TRUE)
 

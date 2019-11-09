@@ -24,7 +24,9 @@ dips.summary <- summary(dips.gc)
 
 ##### HW test and F-statistics
 
-dips.hwt <- hw.test(dips.gc, B=0)
+dips.gp <- genind2genpop(dips.gc)
+
+dips.hwt <- hw.test(dips.gc)
 dips.hwt
 
 fstat.dips <- fstat(dips.gc)
