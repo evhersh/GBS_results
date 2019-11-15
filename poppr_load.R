@@ -38,9 +38,14 @@ dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2, return.alleles = TRUE)
 #dips.gi <- vcfR2genind(vcf.dips, sep = "/", ploidy=2)
 dips.gc <- as.genclone(dips.gi)
 sampleorder <- match(indNames(dips.gc), mystrata$id)
+sampleorder <- match(indNames(dips.gi), mystrata$id)
 strata(dips.gc) <- mystrata[sampleorder,]
 setPop(dips.gc) <- ~pop
+strata(dips.gi) <- mystrata[sampleorder,]
+setPop(dips.gi) <- ~pop
 save(dips.gc, file="dips.gc.RData")
+save(dips.gi, file="dips.gi.RData")
+
 
 trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3, return.alleles = TRUE)
 #trips.gi <- vcfR2genind(vcf.trips, sep = "/", ploidy=3)

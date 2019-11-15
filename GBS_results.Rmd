@@ -113,30 +113,27 @@ This is a cool way to confirm ploidy using genomic data found here: https://knau
 
 ## DAPC
 
-Here's a bunch of DAPC's using different groups / colors.
+Here's my new and improved DAPC:
 
 
-```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Using MS as the two gro (Density plot of DF1). Note how the sexuals are spread out, but the apos are in dense spikes..."}
-<<DAPC.ms>>
-```
+<!-- ```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Using MS as the two groups (Density plot of DF1). Note how the sexuals are spread out, but the apos are in dense spikes..."} -->
+<!-- <<DAPC.ms>> -->
+<!-- ``` -->
 
-<br/><br/>
+<!-- <br/><br/> -->
 
-```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Pops as groups, but colored by mating system. Notice how the apos form 7 tight groups, in contrast to the 10 MLG designations...."}
-<<DAPC.popms>>
-```
+<!-- ```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Pops as groups, but colored by mating system. Notice how the apos form 7 tight groups, in contrast to the 10 MLG designations...."} -->
+<!-- <<DAPC.popms>> -->
+<!-- ``` -->
 
-<br/><br/>
+<!-- <br/><br/> -->
 
-```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Pops as groups - colored by population from south (blue) to north (red). We can see that all of the Laramie sexuals (and some of the Laramie apos) all glom together..."}
-<<DAPC.popall>>
-```
+![](dapc.all.png)
 
 <br/><br/>
 
-```{r, fig.height=5, fig.width=8, cache=TRUE, echo=FALSE, fig.cap="Pops as groups - sub C59-S SM-A C23-A S03-A to `zoom in' a bit..."}
-<<DAPC.popsub>>
-```
+zooming in a bit...
+![](dapc.sub.png)
 
 <br/><br/>
 
@@ -215,7 +212,7 @@ This shows (similar to the above MSN) that the apos form two groups that can be 
 
 ## Heterozygosity
 
-I've calculated observed heterozygosity by ploidy level and by apo MLG. As expected, triploids and diploids have much higher levels of heterozygosity, with the mean Ho for polyploids being around double the diploids. Looking at the within MLG Ho (I tried to name them based on geography - MT_big is the big multi-pop MLG and Lrmy_big is the widespread Laramie clone.). This may be an indication of clone age, where we'd expect a negative relationship between heterozygosity and age (I think that's right?). 
+I've calculated observed heterozygosity by ploidy level and by apo MLG. As expected, triploids and diploids have much higher levels of heterozygosity, with the mean Ho for polyploids being around double the diploids. Looking at the within MLG Ho (I tried to name them based on geography - MT_big is the big multi-pop MLG and Lrmy_big is the widespread Laramie clone.). This may be an indication of clone age, where we'd expect a positive relationship between heterozygosity and age (I think that's right?). 
 
 ![](Hobs_ploidy.png)
 

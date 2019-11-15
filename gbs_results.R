@@ -272,6 +272,8 @@ setPop(AllPops.gc, ~ms/pop)
 msn <- poppr.msn(AllPops.gc, ddist2, showplot = FALSE)
 
 # inds="none" to remove names
+my.pch <- c(17, 17, 17, 17, 17, 17, 21, 17, 17, 17, 17, 17, 17, 21, 21, 21, 21, 21, 17, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 17)
+my.pch <-replace(my.pch,my.pch==21, 19)
 my.cols.ms <- replace(my.pch,my.pch==19, "blue")
 my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "red")
 replace(my.pch,my.pch==21, 19)

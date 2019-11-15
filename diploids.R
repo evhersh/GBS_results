@@ -16,26 +16,35 @@ library(pegas)
 library(hierfstat)
 
 ##### load
-load("dips.gc.RData")
+load("diploid_stats.RData")
 
 ##### Summary
 
-dips.summary <- summary(dips.gc)
+#dips.summary <- summary(dips.gc)
+dips.summary
 
 ##### HW test and F-statistics
 
 dips.gp <- genind2genpop(dips.gc)
 
-dips.hwt <- hw.test(dips.gc)
+#dips.hwt <- hw.test(dips.gc)
 dips.hwt
 
-fstat.dips <- fstat(dips.gc)
+#fstat.dips <- fstat(dips.gc)
+fstat.dips
 
-Gtest.dips <- gstat.randtest(dips.gc,nsim=99)
+#Gtest.dips <- gstat.randtest(dips.gc,nsim=99)
 Gtest.dips
 plot(Gtest.dips)
 
 matFst.dips <- pairwise.fst(dips.gc)
+matFst.dips
+
+dips.tree.fst <- nj(matFst.dips)
+plot(dips.tree.fst, type="unr", tip.col=funky(nPop(dips.gc)), font=2)
+annot <- round(dips.tree.fst$edge.length,2)
+edgelabels(annot[annot>0], which(annot>0), frame="n")
+add.scale.bar()
 
 ##### inbreeding
 seppop.dips <- seppop(dips.gc)

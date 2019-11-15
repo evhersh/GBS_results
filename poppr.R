@@ -283,9 +283,9 @@ matFST <- pairwise.fst(AllPops.gc, res.type="matrix")
 Nei.mat <- dist.genpop(AllPops.gp, method=1)
 Nei.tree <- nj(Nei.mat)
 
-plot(Nei.tree, type="unr", tip.col=my.cols.ms, font=2)
+plot(Nei.tree, type="fan", tip.col=my.cols.ms, font=1)
 annot <- round(Nei.tree$edge.length,2)
-edgelabels(annot[annot>0], which(annot>0), frame="n")
+#edgelabels(annot[annot>0], which(annot>0), frame="n")
 add.scale.bar()
 
 
