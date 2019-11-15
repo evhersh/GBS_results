@@ -92,7 +92,7 @@ It's also worth noting that Meirmans et al (2018) report that this exact type of
 
 ## Map
 
-![](map07.png)
+![](map_fixed.png)
 
 ## K-means clustering
 
