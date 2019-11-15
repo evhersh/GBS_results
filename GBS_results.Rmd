@@ -128,12 +128,12 @@ Here's my new and improved DAPC:
 
 <!-- <br/><br/> -->
 
-![](dapc.all.png)
+![](dapc.all.tiff)
 
 <br/><br/>
 
 zooming in a bit...
-![](dapc.sub.png)
+![](dapc.sub.tiff)
 
 <br/><br/>
 

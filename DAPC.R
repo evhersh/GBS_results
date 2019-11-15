@@ -101,8 +101,18 @@ DAPC.gg <- ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+
   #geom_text(aes(label=pop), size=3)+
   guides(fill = guide_legend(override.aes=list(shape=c(24, 24, 21, 21, 21, 24, 21, 21, 21, 21, 21, 21, 21, 24))))
 
+# tiff("dapc.all.tiff", height = 6, width = 8, res = 300, units="in")
+# ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+ 
+#   geom_point(aes(fill=group, shape=ms), size=3, stroke=0.7)+ 
+#   theme_bw()+
+#   scale_shape_manual(values = c(21, 24))+
+#   scale_fill_manual(values=DAPC.cols)+
+#   #geom_text(aes(label=pop), size=3)+
+#   guides(fill = guide_legend(override.aes=list(shape=c(24, 24, 21, 21, 21, 24, 21, 21, 21, 21, 21, 21, 21, 24))))
+# dev.off()
+
 DAPC.gg.sub <- ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+ 
-  geom_point(aes(fill=group, shape=ms), size=2, stroke=0.7)+ 
+  geom_point(aes(fill=group, shape=ms), size=3, stroke=0.7)+ 
   theme_bw()+
   scale_shape_manual(values = c(21, 24))+
   scale_fill_manual(values=DAPC.cols)+
@@ -110,6 +120,18 @@ DAPC.gg.sub <- ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+
   #geom_text(aes(label=pop), size=3)+
   ylim(-50,50)+
   xlim(-50,25)
+
+# tiff("dapc.sub.tiff", height = 6, width = 8, res = 300, units="in")
+# ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+ 
+#   geom_point(aes(fill=group, shape=ms), size=3, stroke=0.7)+ 
+#   theme_bw()+
+#   scale_shape_manual(values = c(21, 24))+
+#   scale_fill_manual(values=DAPC.cols)+
+#   guides(fill = guide_legend(override.aes=list(shape=c(24, 24, 21, 21, 21, 24, 21, 21, 21, 21, 21, 21, 21, 24))))+
+#   #geom_text(aes(label=pop), size=3)+
+#   ylim(-50,50)+
+#   xlim(-50,25)
+# dev.off()
   
 DAPC.gg.sub2 <- ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+ 
   geom_point(aes(fill=group, shape=ms), size=2)+ 

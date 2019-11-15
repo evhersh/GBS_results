@@ -133,14 +133,15 @@ my_df00[my_df00$Group == 8, "Group"] <- "H"
 # my_df00[my_df00$Group == 11, "Group"] <- "E"
 # my_df00[my_df00$Group == 12, "Group"] <- "H"
 
-p02 <- ggplot(my_df00, aes(x = LD1, y = LD2, color = Group, fill = Group))
-p02 <- p02 + geom_point(size = 4, shape = 21)
+p02 <- ggplot(my_df00, aes(x = LD1, y = LD2, fill = Group))
+p02 <- p02 + geom_point(size = 3, shape = 21)
 p02 <- p02 + theme_bw()
 p02 <- p02 + scale_color_brewer(palette="Paired")
 p02 <- p02 + scale_fill_brewer(palette="Paired")
 #p02 <- p02 + scale_color_manual(values=c(col_vector))
 #p02 <- p02 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
 #p02
+
 
 # plot 3
 my_k01 <- 8:12
