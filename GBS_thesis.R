@@ -112,7 +112,7 @@ ddist.dips.df <- melt(as.matrix(ddist.dips), varnames=c("row", "col"))
 sexdist.df <- ddist.dips.df[as.numeric(ddist.dips.df$row) > as.numeric(ddist.dips.df$col),]
 
 gg.sexdists <- ggplot(data=sexdist.df, aes(x=value))+
-  geom_histogram(aes(y=..density..), bins=100, color="black",fill="red3", size=.75)+
+  geom_histogram(aes(y=..density..), bins=100, color="black",fill="gray48", size=.75)+
   theme_classic()+
   geom_density(alpha=.3)+
   labs(x="Pairwise prevosti distance", y="Density")+
