@@ -14,6 +14,7 @@ library(adegenet)
 library(knitr)
 library(ggpubr)
 library(hierfstat)
+library(ggtree)
 
 ###############
 # Data import #
@@ -283,11 +284,20 @@ matFST <- pairwise.fst(AllPops.gc, res.type="matrix")
 Nei.mat <- dist.genpop(AllPops.gp, method=1)
 Nei.tree <- nj(Nei.mat)
 
-plot(Nei.tree, type="fan", tip.col=my.cols.ms, font=1)
-annot <- round(Nei.tree$edge.length,2)
+
+plot.phylo(Nei.tree, type="unrooted", tip.col=my.cols.ms, cex=0.6, lab4ut = "axial", font=2, show.tip.label = TRUE, no.margin = TRUE)
+#annot <- round(Nei.tree$edge.length,2)
 #edgelabels(annot[annot>0], which(annot>0), frame="n")
 add.scale.bar()
 
+Nei.mat.dips <- dist.genpop(dips.gp, method=1)
+
+Nei.tree.dips <- nj(Nei.mat.dips)
+
+
+plot.phylo(Nei.tree.dips, type="unrooted", tip.col="coral3", cex=0.6, lab4ut = "axial", font=2, show.tip.label = TRUE, no.margin = TRUE)
+#edgelabels(annot[annot>0], which(annot>0), frame="n")
+add.scale.bar()
 
 ##################
 ##### DAPC #######
@@ -623,9 +633,16 @@ write.tree(hookeri.nj, file = "hookeri_nj.NEWICK", append = FALSE,
 
 write.nexus(hookeri.nj, file = "hookeri_nj.nex")
 
-plot.phylo(hookeri.nj, cex=0.8, tip.color = cols.ms[AllPops.gc$strata$ms])
-nodelabels(hookeri.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
-           font = 3, xpd = TRUE)
+plot.phylo(oneMLG.nj, tip.color = cols.ms[OneMLG.gc$strata$ms], type="unrooted", cex=0.6, lab4ut = "axial", font=2)
+add.scale.bar()
+
+plot.phylo(hookeri.nj, tip.color = cols.ms[AllPops.gc$strata$ms], type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE)
+tiplabels(pch=21, col="black", bg=cols.ms[AllPops.gc$strata$ms])
+DAPC.cols
+
+ggtree(hookeri.nj, layout="unrooted")+
+  geom_tiplab()+
+  geom_label(label=hookeri.nj$tip.label, fill=cols.ms[AllPops.gc$strata$ms])
 
 # inds, apo's only
 apo.inds.nj <- aboot(apos.gc, dist=provesti.dist, sample=200, tree="nj", cutoff=50, quiet=TRUE)
@@ -637,7 +654,7 @@ nodelabels(apo.inds.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
 # inds, dips only
 dips.inds.nj <- aboot(dips.gc, dist=provesti.dist, sample=200, tree="nj", cutoff=50, quiet=TRUE)
 
-plot.phylo(dips.inds.nj, cex=0.8, tip.color = cols.ms[dips.gc$strata$ms])
+plot.phylo(dips.inds.nj, cex=0.8, tip.color = cols.ms[dips.gc$strata$ms], type="unrooted", lab4ut = "axial")
 nodelabels(dips.inds.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
            font = 3, xpd = TRUE)
 
@@ -662,7 +679,9 @@ cols.ms <- c("coral3","cornflowerblue")
 # for pops (dips)
 dipspop.nj <- aboot(dips.gp, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
 
-plot.phylo(dipspop.nj, cex=0.8)
+plot.phylo(dips.inds.nj, cex=0.8, tip.color = cols.ms[dips.gc$strata$ms], type="unrooted", lab4ut = "axial")
+
+plot.phylo(dipspop.nj, cex=0.8, type="unrooted", lab4ut = "axial")
 nodelabels(dipspop.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
            font = 3, xpd = TRUE)
 axisPhylo(3)
@@ -681,6 +700,9 @@ nodelabels(oneMLG.nj$node.label, adj = c(1.5, -0.7), frame = "n", cex = 0.8,
            font = 3, xpd = TRUE)
 axisPhylo(3)
 
+plot.phylo(oneMLG.nj, tip.color = cols.ms[OneMLG.gc$strata$ms], type="unrooted", cex=0.6, lab4ut = "axial", font=2)
+add.scale.bar()
+
 #######
 # MSN #
 #######
@@ -688,8 +710,8 @@ setPop(AllPops.gc, ~ms/pop)
 msn <- poppr.msn(AllPops.gc, ddist, showplot = FALSE)
 
 # inds="none" to remove names
-my.cols.ms <- replace(my.pch,my.pch==19, "cornflowerblue")
-my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "coral3")
+my.cols.ms <- replace(my.pch,my.pch==21, "slateblue4")
+my.cols.ms <- replace(my.cols.ms,my.cols.ms==17, "red3")
 replace(my.pch,my.pch==21, 19)
 
 # inds="none" to remove names

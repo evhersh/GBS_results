@@ -88,11 +88,11 @@ I also calculated pairwise distances within MLGs (apos) and populations (sexuals
 
 It's also worth noting that Meirmans et al (2018) report that this exact type of comparison (diploid-diploid vs polyploid-polyploid) is biased, so we should take these results with a grain of salt...
 
-![](GGwInPopDists.png)
+![](distance.png)
 
 ## Map
 
-![](map_fixed.png)
+![](map.png)
 
 ## K-means clustering
 
@@ -102,7 +102,7 @@ A new paper from Patrick Meirmans' group suggests that STRUCTURE is better than 
 
 These results are more-or-less congruent with the MLG designation based on genetic distance. When K=8, the BC and SK pops are grouped together, as well as the L62 apo + the one-off from L39 (these are different clones using genetic distance cutoffs). As K increases, it breaks up the big MLG (in blue), which could indicate that there are actually two closely related clones within that MLG (decreasing the distance cutoff does eventually split that MLG...).
 
-![](kmeans_all.png)
+![](kmeans.png)
 
 
 ## Ploidy confirmation
@@ -128,7 +128,7 @@ Here's my new and improved DAPC:
 
 <!-- <br/><br/> -->
 
-![](dapc.all.tiff)
+![](dapc.png)
 
 <br/><br/>
 
@@ -204,16 +204,20 @@ Here's a NJ tree of all sexual individuals (red) and one representative from eac
 
 This shows (similar to the above MSN) that the apos form two groups that can be traced back to two branches on the tree. One interpretation is that all sampled MLGs had two sexual origins, but I don't really buy that. For one, the lengths of the apo branches are quite long, about on par with the lengths between sexual individuals. I find it hard to believe that apo lineages would accumulate that many differences due to somatic mutation alone. Also, it's quite likely that we didn't sample the sexual populations of origin for these apos (probably because they no longer exist...?), which would make it quite difficult to reconstruct origins (using these data at least...).
 
-![](oneMLG_tree.png)
+![](njtree_all.png)
 
-<!-- Here's a slightly different one... -->
+Here's pop trees (Nei's distance). This is for all pops.
 
-<!-- ![](Nei_tree.png) -->
+![](neitree.png)
+
+This is for only sexuals.
+
+![](neitree_dips.png)
 
 ## Heterozygosity
 
 I've calculated observed heterozygosity by ploidy level and by apo MLG. As expected, triploids and diploids have much higher levels of heterozygosity, with the mean Ho for polyploids being around double the diploids. Looking at the within MLG Ho (I tried to name them based on geography - MT_big is the big multi-pop MLG and Lrmy_big is the widespread Laramie clone.). This may be an indication of clone age, where we'd expect a positive relationship between heterozygosity and age (I think that's right?). 
 
-![](Hobs_ploidy.png)
+![](ind_het_ms.png)
 
 ![](Hobs_apos.png)

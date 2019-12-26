@@ -28,7 +28,16 @@ Gtest.dips
 plot(Gtest.dips)
 
 matFst.dips <- pairwise.fst(dips.gc)
-matFst.dips
+pairfst.dips <-as.matrix(matFst.dips)
+dip.names <- popNames(dips.gc)
+rownames(pairfst.dips) <- dip.names
+colnames(pairfst.dips) <- dip.names
+pairfst.dips
+
+dipsFst.df <- melt(pairfst.dips, varnames=c("row", "col"))
+dipspairFst.df <- dipsFst.df[as.numeric(dipsFst.df$row) > as.numeric(dipsFst.df$col),]
+
+
 ##### inbreeding
 
 temp <- inbreeding(dips.gc, N=100)

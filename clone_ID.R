@@ -43,7 +43,7 @@ fstats3 <- filter_stats(MULTI.apos.gc, distance=MULTI.ddist.apos, plot=TRUE)
 mlg.filter(AllPops.gc, distance=ddist2) <- 0.1
 mlg.table(AllPops.gc)
 
-mlg.filter(apos.gc, distance=ddist.apos) <- 0.13
+mlg.filter(apos.gc, distance=ddist.apos) <- 0.1
 mlg.table(apos.gc)
 
 apos.gc <- addStrata(apos.gc, apo.vec, name="mlg")

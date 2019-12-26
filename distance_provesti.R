@@ -14,6 +14,7 @@ library(adegenet)
 library(knitr)
 library(ggpubr)
 library(hierfstat)
+library(dplyr)
 
 # unspit apo replicate distances
 mean(rep.dists) # 58.15389
@@ -25,6 +26,56 @@ load("trips.gc.RData") # trips.gc
 distmat.trips <- as.matrix(dist(trips.gc))
 labels(distmat.trips)
 distmat.trips["C43-A_3","S03-A_1"]
+
+# apo pairwise provesti dist
+
+hist(ddist.apos)
+qplot(ddist.apos)
+
+diag(ddist.apos)
+
+ddist.apos.df <- melt(as.matrix(ddist.apos), varnames=c("row", "col"))
+apodist.df <- ddist.apos.df[as.numeric(ddist.apos.df$row) > as.numeric(ddist.apos.df$col),]
+apodist.df %>% filter(between(value, 0.05, 0.1))
+apodist.df %>% filter(between(value, 0.07, 0.1))
+apodist.df %>% filter(between(value, 0.1, 0.15))
+apodist.df %>% filter(between(value, 0.25, 0.4))
+
+
+gg.MLGdists <- ggplot(data=apodist.df, aes(x=value))+
+  geom_histogram(aes(y=..density..), bins=100, color="black", fill="slateblue", size=.75)+
+  theme_classic()+
+  #scale_fill_manual(values=c("cornflowerblue"))+
+  geom_density(alpha=.3)+
+  #xlim(0,0.12)+
+  geom_vline(aes(xintercept=0.02948973), color="black", linetype="twodash", size=.75)+
+  labs(x="Pairwise prevosti distance", y="Density")+
+  theme(legend.position = "none")+
+  xlim(0, 0.35)
+
+#sexual pairwise dist prevosti
+
+ddist.dips.df <- melt(as.matrix(ddist.dips), varnames=c("row", "col"))
+sexdist.df <- ddist.dips.df[as.numeric(ddist.dips.df$row) > as.numeric(ddist.dips.df$col),]
+apodist.df %>% filter(between(value, 0.05, 0.1))
+apodist.df %>% filter(between(value, 0.07, 0.1))
+apodist.df %>% filter(between(value, 0.1, 0.15))
+apodist.df %>% filter(between(value, 0.25, 0.4))
+
+
+gg.sexdists <- ggplot(data=sexdist.df, aes(x=value))+
+  geom_histogram(aes(y=..density..), bins=100, color="black",fill="red3", size=.75)+
+  theme_classic()+
+  #scale_fill_manual(values=c("cornflowerblue"))+
+  geom_density(alpha=.3)+
+  #xlim(0,0.12)+
+  #geom_vline(aes(xintercept=0.02948973), color="black", linetype="twodash", size=1.5)+
+  labs(x="Pairwise prevosti distance", y="Density")+
+  theme(legend.position = "none")+
+  xlim(0, 0.35)
+
+ggarrange(gg.MLGdists, gg.sexdists, nrow=2, ncol=1)
+
 ############################
 # within-MLG apo distances #
 ############################
@@ -127,6 +178,16 @@ gg.wInPopDists <- ggplot(data=wInPopDists, aes(x=dist, fill=ms))+
   labs(x="Pairwise prevosti distance", y="Density")
 
 gg.wInMLGdists <- ggplot(data=apo.mlg.ddists, aes(x=all.mlg.ddists, fill=ms))+
+  geom_histogram(aes(y=..density..), bins=50, color="black", size=.75)+
+  theme_classic()+
+  scale_fill_manual(values=c("cornflowerblue"))+
+  geom_density(alpha=.3)+
+  xlim(0,0.12)+
+  geom_vline(aes(xintercept=0.02948973), color="black", linetype="twodash", size=1.5)+
+  labs(x="Pairwise prevosti distance", y="Density")+
+  theme(legend.position = "none")
+
+gg.MLGdists <- ggplot(data=ddist.apos, aes(x=all.mlg.ddists, fill=ms))+
   geom_histogram(aes(y=..density..), bins=50, color="black", size=.75)+
   theme_classic()+
   scale_fill_manual(values=c("cornflowerblue"))+

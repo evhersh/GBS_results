@@ -41,7 +41,7 @@ matFst.dips <- pairwise.fst(dips.gc)
 matFst.dips
 
 dips.tree.fst <- nj(matFst.dips)
-plot(dips.tree.fst, type="unr", tip.col=funky(nPop(dips.gc)), font=2)
+plot(dips.tree.fst, type="unr", tip.col="coral3", font=2)
 annot <- round(dips.tree.fst$edge.length,2)
 edgelabels(annot[annot>0], which(annot>0), frame="n")
 add.scale.bar()
@@ -56,3 +56,4 @@ Fbar <- sapply(temp, mean)
 
 hist(Fbar, col="firebrick", main="Average inbreeding in sexual individuals")
 
+dips.stats <- basic.stats(dips.gc)

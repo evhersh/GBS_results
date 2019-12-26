@@ -171,7 +171,7 @@ mlg.table(AllPops.gc)
 mlg.filter(AllPops.gc, distance=ddist) <- 
 mlg.table(AllPops.gc)
 
-ddist.apos.df <- as.data.frame(ddist.apos)
+ddist.apos.df <- as.data.frame(as.matrix(ddist.apos))
 
 ggplot(data=ddist.apos.df)+
   geom_histogram()

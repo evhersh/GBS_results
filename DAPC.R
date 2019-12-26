@@ -87,6 +87,13 @@ levels(DAPC.all.df$group)
 
 DAPC.cols = c("gray27", "gray", "#CAB2D6", "#A6CEE3", "#FFFF99", "white", "#33A02C", "#B2DF8A", "#1F78B4", "#FF7F00", "#E31A1C", "#FB9A99", "#B15928", "#FDBF6F")
 
+png("njtree_all.png", height=7, width=7, res=300, units="in")
+plot.phylo(hookeri.nj, type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE, no.margin = TRUE)
+tiplabels(pch=21, col="black", bg=DAPC.cols[DAPC.all.df$group])
+add.scale.bar()
+legend("bottomright", legend=levels(DAPC.all.df$group), cex=0.5, pch=21, col="black", pt.bg=DAPC.cols, pt.cex=1)
+dev.off()
+
 
 brewer.pal(12, "Paired")
 # [1] "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C"

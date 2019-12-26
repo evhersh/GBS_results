@@ -29,6 +29,7 @@ load("unsplit.gc.RData")
 distmat.unsplit <- as.matrix(prevosti.dist(unsplit.gc))
 labels(distmat.unsplit)
 
+
 # C23
 rep.dists <- distmat.unsplit["C23-A_1A", "C23-A_1B"]
 rep.dists <- c(rep.dists, distmat.unsplit["C23-A_2A", "C23-A_2B"])
