@@ -16,6 +16,7 @@ library(ggpubr)
 library(hierfstat)
 library(ggtree)
 library(ggnewscale)
+library(dplyr)
 
 
 ###############
@@ -72,6 +73,7 @@ GBS.cols <-
 ############
 # Distance #
 ############
+apos.gc.test <- apos.gc
 
 ddist2 <- prevosti.dist(AllPops.gc)
 ddist.apos <- prevosti.dist(apos.gc)
@@ -80,8 +82,14 @@ ddist.dips <- prevosti.dist(dips.gc)
 mlg.filter(AllPops.gc, distance=ddist2) <- 0.1
 mlg.table(AllPops.gc)
 
+mlg.filter(AllPops.gc.test, distance=ddist2) <- 0.055
+mlg.table(AllPops.gc.test)
+
 mlg.filter(apos.gc, distance=ddist.apos) <- 0.1
 mlg.table(apos.gc)
+
+mlg.filter(apos.gc.test, distance=ddist.apos) <- 0.055
+mlg.table(apos.gc.test)
 
 apo.vec <- mlg.vector(apos.gc)
 mlgIDs <- mlg.id(apos.gc)
@@ -92,16 +100,18 @@ apos.gc <- addStrata(apos.gc, apo.vec, name="mlg")
 ddist.apos.df <- melt(as.matrix(ddist.apos), varnames=c("row", "col"))
 apodist.df <- ddist.apos.df[as.numeric(ddist.apos.df$row) > as.numeric(ddist.apos.df$col),]
 
-# apodist.df %>% filter(between(value, 0.05, 0.1))
+ apodist.df %>% filter(between(value, 0.055, 0.1))
 # apodist.df %>% filter(between(value, 0.07, 0.1))
-# apodist.df %>% filter(between(value, 0.1, 0.15))
+apodist.df %>% filter(between(value, 0.1, 0.15))
 # apodist.df %>% filter(between(value, 0.25, 0.4))
 
 gg.MLGdists <- ggplot(data=apodist.df, aes(x=value))+
   geom_histogram(aes(y=..density..), bins=100, color="black", fill="slateblue", size=.75)+
   theme_classic()+
-  geom_density(alpha=.3)+
-  geom_vline(aes(xintercept=0.02948973), color="black", linetype="twodash", size=.75)+
+  geom_density(fill="slateblue",alpha=.3)+
+  geom_vline(aes(xintercept=0.02948973), color="red", linetype="twodash", size=.75)+
+  geom_vline(aes(xintercept=0.1), color="black", linetype="dashed", size=.75)+
+  #geom_vline(aes(xintercept=0.055), color="black", size=.75)+
   labs(x="", y="Density")+
   theme(legend.position = "none")+
   xlim(0, 0.35)
@@ -114,14 +124,14 @@ sexdist.df <- ddist.dips.df[as.numeric(ddist.dips.df$row) > as.numeric(ddist.dip
 gg.sexdists <- ggplot(data=sexdist.df, aes(x=value))+
   geom_histogram(aes(y=..density..), bins=100, color="black",fill="gray48", size=.75)+
   theme_classic()+
-  geom_density(alpha=.3)+
+  geom_density(fill="gray48", alpha=.2)+
   labs(x="Pairwise prevosti distance", y="Density")+
   theme(legend.position = "none")+
   xlim(0, 0.35)
 
-#png("distance.png", height=7, width=8, res=300, units="in")
+png("distance.png", height=7, width=8, res=300, units="in")
 ggarrange(gg.MLGdists, gg.sexdists, nrow=2, ncol=1, labels=c("A", "B"))
-#dev.off()
+dev.off()
 
 ###########
 # K-means #
@@ -204,12 +214,12 @@ my_df00[my_df00$Group == 8, "Group"] <- "C"
 
 
 p02 <- ggplot(my_df00, aes(x = LD1, y = LD2, fill = Group))
-p02 <- p02 + geom_point(size = 3, shape = 21)
+p02 <- p02 + geom_point(size = 2, shape = 21)
 p02 <- p02 + theme_bw()
 p02 <- p02 + scale_color_brewer(palette="Paired")
-p02 <- p02 + scale_fill_brewer(palette="Paired")
+p02 <- p02 + scale_fill_brewer(palette="Paired", name="")
 #p02 <- p02 + scale_color_manual(values=c(col_vector))
-#p02 <- p02 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
+p02 <- p02 + theme(legend.position = "none")
 p02
 
 
@@ -495,9 +505,11 @@ DAPC.gg.sub2 <- ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+
 
 # main tree with all individuals
 hookeri.nj <- aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
+hookeri.nj1000 <- aboot(AllPops.gc, dist = provesti.dist, sample = 1000, tree = "nj", cutoff = 50, quiet = TRUE)
+
 
 #png("njtree_all.png", height=7, width=7, res=300, units="in")
-plot.phylo(hookeri.nj, type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE, no.margin = TRUE)
+plot.phylo(hookeri.nj1000, type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE, no.margin = TRUE)
 tiplabels(pch=21, col="black", bg=DAPC.cols[DAPC.all.df$group])
 add.scale.bar()
 legend("bottomright", legend=levels(DAPC.all.df$group), cex=0.5, pch=21, col="black", pt.bg=DAPC.cols, pt.cex=1)
@@ -505,6 +517,12 @@ legend("bottomright", legend=levels(DAPC.all.df$group), cex=0.5, pch=21, col="bl
 
 DAPC.cols
 # pop trees based on Nei's distance
+
+#nei.aboot <- aboot(AllPops.gp, distance = "nei.dist", sample = 200, quiet = TRUE, tree="nj")
+plot.phylo(nei.aboot, type="unrooted", tip.col=pop.cols, cex=0.6, lab4ut = "axial", font=2, show.tip.label = TRUE, no.margin = TRUE)
+# annot <- round(nei.aboot$edge.length,2)
+# edgelabels(annot[annot>0], which(annot>0), frame="n")
+
 
 Nei.mat <- dist.genpop(AllPops.gp, method=1)
 Nei.tree <- nj(Nei.mat)
@@ -516,12 +534,14 @@ sexpop.cols <- c("black", "black", "black", "black", "black", "#FDBF6F", "gray49
 # only diploids
 
 png("neitree_dips.png", height=7, width=7, res=300, units="in")
-plot.phylo(Nei.tree.dips, type="unrooted", tip.col=sexpop.cols, cex=0.6, lab4ut = "axial", font=2, show.tip.label = TRUE, no.margin = TRUE, cex=2)
+plot.phylo(Nei.tree.dips, type="unrooted", tip.col=sexpop.cols, cex=0.6, lab4ut = "axial", font=2, show.tip.label = TRUE, no.margin = TRUE)
 #edgelabels(annot[annot>0], which(annot>0), frame="n")
 add.scale.bar()
 dev.off()
 
+
 pop.cols<- c("black", "black", "black", "black", "black", "gray49", "#CAB2D6", "gray49", "gray49", "gray49", "gray49", "gray49", "gray49", "#A6CEE3", "#FF7F00", "#A6CEE3", "#33A02C", "#1F78B4", "gray49", "#1F78B4", "#1F78B4", "#1F78B4", "#1F78B4", "#1F78B4", "#1F78B4", "#FF7F00", "#FB9A99", "#E31A1C", "#B15928", "#FDBF6F")
+show_col(DAPC.cols)
 # all pops
 png("neitree.png", height=7, width=7, res=300, units="in")
 plot.phylo(Nei.tree, type="unrooted", tip.col=pop.cols, cex=0.6, lab4ut = "axial", font=2, show.tip.label = TRUE, no.margin = TRUE)
