@@ -32,6 +32,9 @@ dips.hwt
 
 #fstat.dips <- fstat(dips.gc)
 fstat.dips
+# low inbreeding (ind/pop) = Fis
+
+fstat.c59 <- fstat(seppop.dips$`C59-S`)
 
 #Gtest.dips <- gstat.randtest(dips.gc,nsim=99)
 Gtest.dips
@@ -39,6 +42,13 @@ plot(Gtest.dips)
 
 matFst.dips <- pairwise.fst(dips.gc)
 matFst.dips
+colnames(matFst.dips) <- popNames(dips.gc)
+rownames(matFst.dips) <- popNames(dips.gc)
+
+matFst.dips2 <- as.matrix(matFst.dips)
+colnames(matFst.dips2) <- popNames(dips.gc)
+rownames(matFst.dips2) <- popNames(dips.gc)
+
 
 dips.tree.fst <- nj(matFst.dips)
 plot(dips.tree.fst, type="unr", tip.col="coral3", font=2)
@@ -57,3 +67,8 @@ Fbar <- sapply(temp, mean)
 hist(Fbar, col="firebrick", main="Average inbreeding in sexual individuals")
 
 dips.stats <- basic.stats(dips.gc)
+
+fdens <- inbreeding(dips.gc, res.type = "function")
+
+Fest <- inbreeding(dips.gc, res.type = "estimate")
+mostInbred <- which.max(Fest)

@@ -57,7 +57,7 @@ gg.MLGdists <- ggplot(data=apodist.df, aes(x=value))+
 
 ddist.dips.df <- melt(as.matrix(ddist.dips), varnames=c("row", "col"))
 sexdist.df <- ddist.dips.df[as.numeric(ddist.dips.df$row) > as.numeric(ddist.dips.df$col),]
-apodist.df %>% filter(between(value, 0.05, 0.1))
+apodist.df %>% filter(between(value, 0.055, 0.1))
 apodist.df %>% filter(between(value, 0.07, 0.1))
 apodist.df %>% filter(between(value, 0.1, 0.15))
 apodist.df %>% filter(between(value, 0.25, 0.4))

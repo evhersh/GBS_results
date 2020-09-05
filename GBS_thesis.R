@@ -109,7 +109,10 @@ gg.MLGdists <- ggplot(data=apodist.df, aes(x=value))+
   geom_histogram(aes(y=..density..), bins=100, color="black", fill="slateblue", size=.75)+
   theme_classic()+
   geom_density(fill="slateblue",alpha=.3)+
-  geom_vline(aes(xintercept=0.02948973), color="red", linetype="twodash", size=.75)+
+  geom_jitter(data=error.df, aes(x=rep.dists, y=20), pch=21, fill="slateblue", alpha=0.5)+
+  #geom_point(data=error.mean, aes(x=mean, y=21), pch=21, fill="white")+
+  #geom_errorbarh(data=error.mean, aes(xmin=lower.ci, xmax=upper.ci, y=21), height=0, inherit.aes = FALSE)+
+  geom_vline(aes(xintercept=0.02647497), color="red", linetype="twodash", size=.75)+
   geom_vline(aes(xintercept=0.1), color="black", linetype="dashed", size=.75)+
   #geom_vline(aes(xintercept=0.055), color="black", size=.75)+
   labs(x="", y="Density")+
@@ -128,6 +131,10 @@ gg.sexdists <- ggplot(data=sexdist.df, aes(x=value))+
   labs(x="Pairwise prevosti distance", y="Density")+
   theme(legend.position = "none")+
   xlim(0, 0.35)
+
+png("distance_apos.png", height=5, width=8, res=300, units="in")
+gg.MLGdists
+dev.off()
 
 png("distance.png", height=7, width=8, res=300, units="in")
 ggarrange(gg.MLGdists, gg.sexdists, nrow=2, ncol=1, labels=c("A", "B"))
@@ -359,6 +366,9 @@ ggarrange(ggarrange(p01,
 )
 dev.off()
 
+png("kmeans_C.png", height=5.5, width=9, res=300, units="in")
+p03
+dev.off()
 ########
 # DAPC #
 ########
@@ -413,7 +423,7 @@ DAPC.all.df <- separate(DAPC.all.df, "Group", sep= "-", c("pop", "ms"))
 DAPC.all.df$group <- "blank"
 DAPC.all.df$group[1:18] <- "CO-S"
 DAPC.all.df$group[7:9] <- "Laramie-S"
-DAPC.all.df$group[16:18] <- "YK-S"
+DAPC.all.df$group[16:18] <- "YT-S"
 DAPC.all.df$group[19:41] <- "Laramie-S"
 DAPC.all.df$group[37] <- "L45-S"
 DAPC.all.df$group[42:46] <- "ND-A"
@@ -430,9 +440,9 @@ DAPC.all.df$group[97:100] <- "MT.big-A"
 DAPC.all.df$group[101:104] <- "MT.big-A"
 DAPC.all.df$group[105] <- "L62-A"
 DAPC.all.df$group[106:109] <- "SK-A"
-DAPC.all.df$group[110:114] <- "YK-A"
+DAPC.all.df$group[110:114] <- "YT-A"
 
-DAPC.all.df$group <- factor(DAPC.all.df$group, levels=c("CO-S", "Laramie-S", "L62-A", "Laramie.big-A", "Laramie.small-A", "L45-S", "L39.big-A", "L39.small-A", "MT.big-A", "ND-A", "SK-A", "BC-A", "YK-A", "YK-S"))
+DAPC.all.df$group <- factor(DAPC.all.df$group, levels=c("CO-S", "Laramie-S", "L62-A", "Laramie.big-A", "Laramie.small-A", "L45-S", "L39.big-A", "L39.small-A", "MT.big-A", "ND-A", "SK-A", "BC-A", "YT-A", "YT-S"))
 
 levels(DAPC.all.df$group)
 
@@ -507,13 +517,30 @@ DAPC.gg.sub2 <- ggplot(DAPC.all.df, aes(x = LD1, y = LD2))+
 hookeri.nj <- aboot(AllPops.gc, dist = provesti.dist, sample = 200, tree = "nj", cutoff = 50, quiet = TRUE)
 hookeri.nj1000 <- aboot(AllPops.gc, dist = provesti.dist, sample = 1000, tree = "nj", cutoff = 50, quiet = TRUE)
 
+hookeri.nj1000$node.label2 <- as.numeric(hookeri.nj1000$node.label)
+hookeri.nj1000$node.label2[hookeri.nj1000$node.label<90] <- 1
+hookeri.nj1000$node.label2[hookeri.nj1000$node.label>90] <- 2
+hookeri.nj1000$node.label2[is.na(hookeri.nj1000$node.label2)] <- 1
 
-#png("njtree_all.png", height=7, width=7, res=300, units="in")
+tree.pch <- DAPC.cols[DAPC.all.df$group]
+tree.pch[1:41] <- 24
+tree.pch[42:114] <- 21
+tree.pch <- as.numeric(tree.pch)
+
+tree.legend.pch <- c(24, 24, 21, 21, 21, 24, 21, 21, 21, 21, 21, 21, 21, 24)
+
+png("njtree_all.png", height=7, width=7, res=300, units="in")
 plot.phylo(hookeri.nj1000, type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE, no.margin = TRUE)
-tiplabels(pch=21, col="black", bg=DAPC.cols[DAPC.all.df$group])
+tiplabels(pch=tree.pch, col="black", bg=DAPC.cols[DAPC.all.df$group])
+#nodelabels(hookeri.nj1000$node.label, frame = "n", xpd = TRUE, cex=0.5, font=3, horiz=TRUE)
 add.scale.bar()
-legend("bottomright", legend=levels(DAPC.all.df$group), cex=0.5, pch=21, col="black", pt.bg=DAPC.cols, pt.cex=1)
-#dev.off()
+legend("bottomright", legend=levels(DAPC.all.df$group), cex=0.5, pch=tree.legend.pch, col="black", pt.bg=DAPC.cols, pt.cex=1)
+dev.off()
+
+# edge(node=1:hookeri.nj1000$Nnode+Ntip(hookeri.nj1000),
+#            pie=cbind(as.numeric(hookeri.nj1000$node.label),100-as.numeric(hookeri.nj1000$node.label)),
+#            piecol=c("white","black"),cex=0.2)
+#nodelabels(hookeri.nj1000$node.label, frame = "n", xpd = TRUE, cex=0.5, font=3, horiz=TRUE)
 
 DAPC.cols
 # pop trees based on Nei's distance
@@ -589,7 +616,7 @@ gg.Hobs <- ggplot()+
   geom_point(data=mean.Hobs, aes(x=as.numeric(as.factor(ms))+0.4, y=mean, fill=ms), shape=21, size=3.5)+
   scale_fill_manual(values=c("white", "white"))+
   labs(x="Mating system", y="Mean observed heterozygosity")+
-  theme_classic()+
+  theme_bw()+
   scale_x_discrete(labels=c("S" = "Sexual", "A" = "Apomictic"))+
   theme(legend.title=element_blank(), legend.text = element_text(size=5), legend.key.size = unit(0.3, 'cm'), legend.position=c(0.925, 0.2), legend.background = element_blank(), legend.box.background = element_rect(colour = "black"))
 
@@ -702,4 +729,22 @@ hist(ad2[,"C87-A_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
 hist(ad1[,"C87-A_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
 axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
 
+outer = FALSE
 
+line = -2
+cex = 2
+adj  = 0.025
+
+
+png("ploidy.png", res=300, units="in", width=7, height=9)
+par(mfrow=c(2,1))
+hist(ad2[,"L45-S_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n", main="", xlab="")
+hist(ad1[,"L45-S_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","2/3","3/4",1))
+title(outer=outer,adj=adj,main="A",cex.main=cex,col="black",font=2,line=line)
+
+hist(ad2[,"L45-A_2"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n", main="", xlab="Allele balance")
+hist(ad1[,"L45-A_2"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","2/3","3/4",1))
+title(outer=outer,adj=adj,main="B",cex.main=cex,col="black",font=2,line=line)
+dev.off()

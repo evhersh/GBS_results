@@ -240,4 +240,230 @@ ggarrange(ggarrange(p01,
 
 
 
+########### DAPC plots
 
+my_k00 <- 9
+
+grp20_l <- vector(mode = "list", length = length(my_k00))
+dapc00_l <- vector(mode = "list", length = length(my_k00))
+
+for(i in 1:length(dapc00_l)){
+  set.seed(70)
+  grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
+}
+
+my_df00 <- as.data.frame(dapc00_l[[ length(dapc00_l) ]]$ind.coord)
+my_df00$Group <- dapc00_l[[ length(dapc00_l) ]]$grp
+head(my_df00)
+
+my_df00$Group <- as.character(my_df00$Group)
+
+subset(my_df01, Posterior>0.5 & K==9)
+# group A = L06, L16, L17 (laramie big)
+# group B = C27, MT big
+# group C = L39-A_4, L62-A_5, L16
+# group D = L39-A_1,2,3,5
+# group E = C43
+# group F = S03
+# group G = C23
+# group H = SM
+# group I = C85-1, 2b, c87-5, l45-345
+# k9
+# 
+my_df00[my_df00$Group == 1, "Group"] <- "B"
+my_df00[my_df00$Group == 2, "Group"] <- "H"
+my_df00[my_df00$Group == 3, "Group"] <- "C"
+my_df00[my_df00$Group == 4, "Group"] <- "I"
+my_df00[my_df00$Group == 5, "Group"] <- "D"
+my_df00[my_df00$Group == 6, "Group"] <- "F"
+my_df00[my_df00$Group == 7, "Group"] <- "G"
+my_df00[my_df00$Group == 8, "Group"] <- "A"
+my_df00[my_df00$Group == 9, "Group"] <- "E"
+
+
+p04.1 <- ggplot(my_df00, aes(x = LD1, y = LD2, fill = Group))
+p04.1 <- p04.1 + geom_point(size = 3, shape = 21)
+p04.1 <- p04.1 + theme_bw()
+p04.1 <- p04.1 + scale_color_brewer(palette="Paired")
+p04.1 <- p04.1 + scale_fill_brewer(palette="Paired")
+#p02 <- p02 + scale_color_manual(values=c(col_vector))
+#p02 <- p02 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
+p04.1
+
+
+
+####### K=10 #########
+
+my_k00 <- 10
+
+grp20_l <- vector(mode = "list", length = length(my_k00))
+dapc00_l <- vector(mode = "list", length = length(my_k00))
+
+for(i in 1:length(dapc00_l)){
+  set.seed(70)
+  grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
+}
+
+my_df00 <- as.data.frame(dapc00_l[[ length(dapc00_l) ]]$ind.coord)
+my_df00$Group <- dapc00_l[[ length(dapc00_l) ]]$grp
+head(my_df00)
+
+my_df00$Group <- as.character(my_df00$Group)
+
+subset(my_df01, Posterior>0.5 & K==10)
+# group A = L06, L16, L17 (laramie big)
+# group B = C27, MT big
+# group C = L39-A_4, L62-A_5, L16
+# group D = L39-A_1,2,3,5
+# group E = C43
+# group F = S03
+# group G = C23
+# group H = SM
+# group I = MT big 2
+# group J = MT big 3
+# k10
+# 
+my_df00[my_df00$Group == 1, "Group"] <- "J"
+my_df00[my_df00$Group == 2, "Group"] <- "A"
+my_df00[my_df00$Group == 3, "Group"] <- "C"
+my_df00[my_df00$Group == 4, "Group"] <- "I"
+my_df00[my_df00$Group == 5, "Group"] <- "E"
+my_df00[my_df00$Group == 6, "Group"] <- "F"
+my_df00[my_df00$Group == 7, "Group"] <- "G"
+my_df00[my_df00$Group == 8, "Group"] <- "B"
+my_df00[my_df00$Group == 9, "Group"] <- "H"
+my_df00[my_df00$Group == 10, "Group"] <- "D"
+
+
+p04.2 <- ggplot(my_df00, aes(x = LD1, y = LD2, fill = Group))
+p04.2 <- p04.2 + geom_point(size = 3, shape = 21)
+p04.2 <- p04.2 + theme_bw()
+p04.2 <- p04.2 + scale_color_brewer(palette="Paired")
+p04.2 <- p04.2 + scale_fill_brewer(palette="Paired")
+#p02 <- p02 + scale_color_manual(values=c(col_vector))
+#p02 <- p02 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
+p04.2
+
+
+###### K11 ######
+
+my_k00 <- 11
+
+grp20_l <- vector(mode = "list", length = length(my_k00))
+dapc00_l <- vector(mode = "list", length = length(my_k00))
+
+for(i in 1:length(dapc00_l)){
+  set.seed(70)
+  grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
+}
+
+my_df00 <- as.data.frame(dapc00_l[[ length(dapc00_l) ]]$ind.coord)
+my_df00$Group <- dapc00_l[[ length(dapc00_l) ]]$grp
+head(my_df00)
+
+my_df00$Group <- as.character(my_df00$Group)
+
+subset(my_df01, Posterior>0.1 & K==11)
+# group A = L06, L16-3,5, L17 (laramie big)
+# group B = C27, MT big
+# group C = L39-A_4, L62-A_5
+# group D = L39-A_1,2,3,5
+# group E = C43
+# group F = S03
+# group G = C23
+# group H = SM
+# group I = MT big 2
+# group J = MT big 3
+# group K = L16 1,2,4
+# k10
+# 
+my_df00[my_df00$Group == 1, "Group"] <- "G"
+my_df00[my_df00$Group == 2, "Group"] <- "K"
+my_df00[my_df00$Group == 3, "Group"] <- "E"
+my_df00[my_df00$Group == 4, "Group"] <- "A"
+my_df00[my_df00$Group == 5, "Group"] <- "H"
+my_df00[my_df00$Group == 6, "Group"] <- "J"
+my_df00[my_df00$Group == 7, "Group"] <- "F"
+my_df00[my_df00$Group == 8, "Group"] <- "C"
+my_df00[my_df00$Group == 9, "Group"] <- "D"
+my_df00[my_df00$Group == 10, "Group"] <- "B"
+my_df00[my_df00$Group == 11, "Group"] <- "I"
+
+p04.3 <- ggplot(my_df00, aes(x = LD1, y = LD2, fill = Group))
+p04.3 <- p04.3 + geom_point(size = 3, shape = 21)
+p04.3 <- p04.3 + theme_bw()
+p04.3 <- p04.3 + scale_color_brewer(palette="Paired")
+p04.3 <- p04.3 + scale_fill_brewer(palette="Paired")
+#p02 <- p02 + scale_color_manual(values=c(col_vector))
+#p02 <- p02 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
+p04.3
+
+
+###### K12 #######
+
+
+my_k00 <- 12
+
+grp20_l <- vector(mode = "list", length = length(my_k00))
+dapc00_l <- vector(mode = "list", length = length(my_k00))
+
+for(i in 1:length(dapc00_l)){
+  set.seed(70)
+  grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
+}
+
+my_df00 <- as.data.frame(dapc00_l[[ length(dapc00_l) ]]$ind.coord)
+my_df00$Group <- dapc00_l[[ length(dapc00_l) ]]$grp
+head(my_df00)
+
+my_df00$Group <- as.character(my_df00$Group)
+
+subset(my_df01, Posterior>0.1 & K==12)
+# group A = L06, L16-3,5, L17 (laramie big)
+# group B = C27, MT big
+# group C = L39-A_4, L62-A_5
+# group D = L39-A_1,2,3,5
+# group E = C43
+# group F = S03
+# group G = C23
+# group H = SM
+# group I = MT big 2
+# group J = L16-3,5
+# group K = L16 1,2,4
+# group L = C43-4
+# k12
+# 
+my_df00[my_df00$Group == 1, "Group"] <- "I"
+my_df00[my_df00$Group == 2, "Group"] <- "B"
+my_df00[my_df00$Group == 3, "Group"] <- "C"
+my_df00[my_df00$Group == 4, "Group"] <- "A"
+my_df00[my_df00$Group == 5, "Group"] <- "F"
+my_df00[my_df00$Group == 6, "Group"] <- "L"
+my_df00[my_df00$Group == 7, "Group"] <- "E"
+my_df00[my_df00$Group == 8, "Group"] <- "D"
+my_df00[my_df00$Group == 9, "Group"] <- "H"
+my_df00[my_df00$Group == 10, "Group"] <- "G"
+my_df00[my_df00$Group == 11, "Group"] <- "K"
+my_df00[my_df00$Group == 12, "Group"] <- "J"
+
+p04.4 <- ggplot(my_df00, aes(x = LD1, y = LD2, fill = Group))
+p04.4 <- p04.4 + geom_point(size = 3, shape = 21)
+p04.4 <- p04.4 + theme_bw()
+p04.4 <- p04.4 + scale_color_brewer(palette="Paired")
+p04.4 <- p04.4 + scale_fill_brewer(palette="Paired")
+#p02 <- p02 + scale_color_manual(values=c(col_vector))
+#p02 <- p02 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
+p04.4
+
+
+png("kmeans-dapc.png", height=10, width=11, res=300, units="in")
+ggarrange(p02,p04.1,p04.2,p04.3,p04.4, ncol=2,nrow=3, labels=c("K=8", "K=9", "K=10", "K=11", "K=12"), hjust = -3, vjust = 2.5, common.legend = TRUE, legend = "none")
+dev.off()

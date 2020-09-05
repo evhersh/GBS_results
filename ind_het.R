@@ -61,3 +61,5 @@ gg.Hobs <-ggplot()+
 png("ind_het_ms.png", height=7, width=8, res=300, units="in")
 gg.Hobs
 dev.off()
+
+kruskal.test(data=ind.Hobs, Hobs~ms)
