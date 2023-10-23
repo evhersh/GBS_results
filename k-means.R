@@ -17,11 +17,10 @@ library(hierfstat)
 
 # All pops
 
-grp <- find.clusters(AllPops.gc, max.n.clust=30) # looks like lowest BIC is 13 clusters...
-names(grp)
-table(pop(AllPops.gc), grp$grp)
-table.value(table(pop(AllPops.gc), grp$grp), col.lab=paste("inf", 1:13),
-            row.lab=paste("ori", 1:13))
+kmeans.all <- find.clusters(AllPops.gc)
+all.tab <- tab(AllPops.gc, NA.method="mean")
+all.xval <- xvalDapc(all.tab, grp=kmeans.all$grp)
+all.xval[2:6]
 
 ## from vcfR -- run k-means multiple times
 # library(vcfR)
@@ -49,10 +48,10 @@ p1 <- ggplot(my_df2, aes(x = K, y = BIC))
 p1 <- p1 + geom_boxplot()
 p1 <- p1 + theme_bw()
 p1 <- p1 + xlab("Number of groups (K)")
-p1 # 10 clusters kind of looks right
+p1 # 4-6 clusters kind of looks right
 
 # plot 2 #
-my_k0 <- 9
+my_k0 <- 4
 
 grp0_l <- vector(mode = "list", length = length(my_k0))
 dapc0_l <- vector(mode = "list", length = length(my_k0))
@@ -68,15 +67,15 @@ my_df0 <- as.data.frame(dapc0_l[[ length(dapc0_l) ]]$ind.coord)
 my_df0$Group <- dapc0_l[[ length(dapc0_l) ]]$grp
 head(my_df0)
 
-p2 <- ggplot(my_df0, aes(x = LD1, y = LD2, color = Group, fill = Group))
-p2 <- p2 + geom_point(size = 4, shape = 21)
+p2 <- ggplot(my_df0, aes(x = LD1, y = LD2, fill = Group))
+p2 <- p2 + geom_point(size = 4, shape = 21, color="black")
 p2 <- p2 + theme_bw()
-p2 <- p2 + scale_color_manual(values=c(col_vector))
-p2 <- p2 + scale_fill_manual(values=c(paste(col_vector, "66", sep = "")))
+#p2 <- p2 + scale_color_manual(values=c(col_vector))
+p2 <- p2 + scale_fill_manual(values=cols)
 p2
 
 # plot 3
-my_k <- 9:12
+my_k <- 4:6
 
 grp_l <- vector(mode = "list", length = length(my_k))
 dapc_l <- vector(mode = "list", length = length(my_k))
@@ -116,7 +115,7 @@ names(grp.labs) <- my_k
 my_df$pop <- factor(my_df$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
 
 # my_df0$Group <- as.character(my_df0$Group)
-# my_df$Group <- as.character(my_df$Group)
+my_df$Group <- as.character(my_df$Group)
 # 
 # my_df0[ my_df0$K == 10 & my_df0$Group == 1, "Group"] <- "A"
 # my_df0[ my_df0$K == 10 & my_df0$Group == 2, "Group"] <- "B"
@@ -128,57 +127,30 @@ my_df$pop <- factor(my_df$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49
 # my_df0[ my_df0$K == 10 & my_df0$Group == 8, "Group"] <- "H"
 # my_df0[ my_df0$K == 10 & my_df0$Group == 9, "Group"] <- "I"
 # my_df0[ my_df0$K == 10 & my_df0$Group == 10, "Group"] <- "J"
-# 
-# my_df[ my_df$K == 10 & my_df$Group == 1, "Group"] <- "A"
-# my_df[ my_df$K == 10 & my_df$Group == 2, "Group"] <- "B"
-# my_df[ my_df$K == 10 & my_df$Group == 3, "Group"] <- "C"
-# my_df[ my_df$K == 10 & my_df$Group == 4, "Group"] <- "D"
+# #black  #grey   #blue       #brown    # yellow    #orange
+my_df[ my_df$K == 4 & my_df$Group == 1, "Group"] <- "D"
+my_df[ my_df$K == 4 & my_df$Group == 2, "Group"] <- "A"
+my_df[ my_df$K == 4 & my_df$Group == 3, "Group"] <- "C"
+my_df[ my_df$K == 4 & my_df$Group == 4, "Group"] <- "B"
 # my_df[ my_df$K == 10 & my_df$Group == 5, "Group"] <- "E"
 # my_df[ my_df$K == 10 & my_df$Group == 6, "Group"] <- "F"
 # my_df[ my_df$K == 10 & my_df$Group == 7, "Group"] <- "G"
 # my_df[ my_df$K == 10 & my_df$Group == 8, "Group"] <- "H"
 # my_df[ my_df$K == 10 & my_df$Group == 9, "Group"] <- "I"
 # my_df[ my_df$K == 10 & my_df$Group == 10, "Group"] <- "J"
-# 
-# my_df[ my_df$K == 11 & my_df$Group == 1, "Group"] <- "A"
-# my_df[ my_df$K == 11 & my_df$Group == 2, "Group"] <- "B"
-# my_df[ my_df$K == 11 & my_df$Group == 3, "Group"] <- "C"
-# my_df[ my_df$K == 11 & my_df$Group == 4, "Group"] <- "D"
-# my_df[ my_df$K == 11 & my_df$Group == 5, "Group"] <- "E"
-# my_df[ my_df$K == 11 & my_df$Group == 6, "Group"] <- "F"
-# my_df[ my_df$K == 11 & my_df$Group == 7, "Group"] <- "G"
-# my_df[ my_df$K == 11 & my_df$Group == 8, "Group"] <- "H"
-# my_df[ my_df$K == 11 & my_df$Group == 9, "Group"] <- "I"
-# my_df[ my_df$K == 11 & my_df$Group == 10, "Group"] <- "J"
-# my_df[ my_df$K == 11 & my_df$Group == 11, "Group"] <- "K"
-# 
-# my_df[ my_df$K == 12 & my_df$Group == 1, "Group"] <- "A"
-# my_df[ my_df$K == 12 & my_df$Group == 2, "Group"] <- "B"
-# my_df[ my_df$K == 12 & my_df$Group == 3, "Group"] <- "C"
-# my_df[ my_df$K == 12 & my_df$Group == 4, "Group"] <- "D"
-# my_df[ my_df$K == 12 & my_df$Group == 5, "Group"] <- "E"
-# my_df[ my_df$K == 12 & my_df$Group == 6, "Group"] <- "F"
-# my_df[ my_df$K == 12 & my_df$Group == 7, "Group"] <- "G"
-# my_df[ my_df$K == 12 & my_df$Group == 8, "Group"] <- "H"
-# my_df[ my_df$K == 12 & my_df$Group == 9, "Group"] <- "I"
-# my_df[ my_df$K == 12 & my_df$Group == 10, "Group"] <- "J"
-# my_df[ my_df$K == 12 & my_df$Group == 11, "Group"] <- "K"
-# my_df[ my_df$K == 12 & my_df$Group == 12, "Group"] <- "L"
-# 
-# my_df[ my_df$K == 13 & my_df$Group == 1, "Group"] <- "A"
-# my_df[ my_df$K == 13 & my_df$Group == 2, "Group"] <- "B"
-# my_df[ my_df$K == 13 & my_df$Group == 3, "Group"] <- "C"
-# my_df[ my_df$K == 13 & my_df$Group == 4, "Group"] <- "D"
-# my_df[ my_df$K == 13 & my_df$Group == 5, "Group"] <- "E"
-# my_df[ my_df$K == 13 & my_df$Group == 6, "Group"] <- "F"
-# my_df[ my_df$K == 13 & my_df$Group == 7, "Group"] <- "G"
-# my_df[ my_df$K == 13 & my_df$Group == 8, "Group"] <- "H"
-# my_df[ my_df$K == 13 & my_df$Group == 9, "Group"] <- "I"
-# my_df[ my_df$K == 13 & my_df$Group == 10, "Group"] <- "J"
-# my_df[ my_df$K == 13 & my_df$Group == 11, "Group"] <- "K"
-# my_df[ my_df$K == 13 & my_df$Group == 12, "Group"] <- "L"
-# my_df[ my_df$K == 13 & my_df$Group == 13, "Group"] <- "M"
-
+# #black  #grey   #blue       #brown    # yellow    #orange
+my_df[ my_df$K == 5 & my_df$Group == 1, "Group"] <- "C"
+my_df[ my_df$K == 5 & my_df$Group == 2, "Group"] <- "D"
+my_df[ my_df$K == 5 & my_df$Group == 3, "Group"] <- "A"
+my_df[ my_df$K == 5 & my_df$Group == 4, "Group"] <- "B"
+my_df[ my_df$K == 5 & my_df$Group == 5, "Group"] <- "E"
+# #black  #grey   #blue       #brown    # yellow    #orange
+my_df[ my_df$K == 6 & my_df$Group == 1, "Group"] <- "A"
+my_df[ my_df$K == 6 & my_df$Group == 2, "Group"] <- "C"
+my_df[ my_df$K == 6 & my_df$Group == 3, "Group"] <- "B"
+my_df[ my_df$K == 6 & my_df$Group == 4, "Group"] <- "F"
+my_df[ my_df$K == 6 & my_df$Group == 5, "Group"] <- "D"
+my_df[ my_df$K == 6 & my_df$Group == 6, "Group"] <- "E"
 
 p3 <- ggplot(my_df, aes(x = Sample, y = Posterior, fill = Group))
 p3 <- p3 + geom_bar(stat = "identity")
@@ -188,7 +160,8 @@ p3 <- p3 + theme_bw()
 p3 <- p3 + ylab("Posterior membership probability")
 p3 <- p3 + theme(legend.position='none')
 #p3 <- p3 + scale_color_brewer(palette="Paired")
-p3 <- p3 + scale_fill_manual(values=c(col_vector))
+                                        #black  #grey   #blue       #peach    # yellow    #orange
+p3 <- p3 + scale_fill_manual(values=c("gray27", "gray", "#1F78B4", "#FDBF6F", "#FFFF99", "#FF7F00"))
 p3 <- p3 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),panel.spacing.x=unit(0.1, "lines"))
 p3
 

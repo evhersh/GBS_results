@@ -14,6 +14,7 @@ library(adegenet)
 library(knitr)
 library(ggpubr)
 library(hierfstat)
+library(tidyverse)
 
 # load data
 load("AllPops.gc.RData")

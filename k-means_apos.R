@@ -19,11 +19,10 @@ library(RColorBrewer)
 
 # Apos only
 
-grp2 <- find.clusters(apos.gc, max.n.clust=30) # looks like lowest BIC is 13 clusters...
-names(grp2)
-table(pop(apos.gc), grp2$grp)
-table.value(table(pop(apos.gc), grp2$grp), col.lab=paste("inf", 1:8),
-            row.lab=paste("ori", 1:8))
+kmeans.apos <- find.clusters(apos.gc, max.n.clust=30) # looks like lowest BIC is 13 clusters...
+apos.tab <- tab(apos.gc, NA.method="mean")
+apos.xval <- xvalDapc(apos.tab, grp=kmeans.apos$grp)
+apos.xval[2:6]
 
 ## from vcfR -- run k-means multiple times
 # library(vcfR)
@@ -62,7 +61,7 @@ dapc00_l <- vector(mode = "list", length = length(my_k00))
 for(i in 1:length(dapc00_l)){
   set.seed(70)
   grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
-  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 10, n.da = my_k00[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -113,7 +112,7 @@ dapc01_l <- vector(mode = "list", length = length(my_k01))
 for(i in 1:length(dapc01_l)){
   set.seed(10)
   grp2_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k01[i])
-  dapc01_l[[i]] <- dapc(apos.gc, pop = grp2_l[[i]]$grp, n.pca = 8, n.da = my_k01[i])
+  dapc01_l[[i]] <- dapc(apos.gc, pop = grp2_l[[i]]$grp, n.pca = 10, n.da = my_k01[i])
   #  dapc01_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -250,7 +249,7 @@ dapc00_l <- vector(mode = "list", length = length(my_k00))
 for(i in 1:length(dapc00_l)){
   set.seed(70)
   grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
-  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 10, n.da = my_k00[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -304,7 +303,7 @@ dapc00_l <- vector(mode = "list", length = length(my_k00))
 for(i in 1:length(dapc00_l)){
   set.seed(70)
   grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
-  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 10, n.da = my_k00[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -359,7 +358,7 @@ dapc00_l <- vector(mode = "list", length = length(my_k00))
 for(i in 1:length(dapc00_l)){
   set.seed(70)
   grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
-  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 10, n.da = my_k00[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -416,7 +415,7 @@ dapc00_l <- vector(mode = "list", length = length(my_k00))
 for(i in 1:length(dapc00_l)){
   set.seed(70)
   grp20_l[[i]] <- find.clusters(apos.gc, n.pca = 200, n.clust = my_k00[i])
-  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 8, n.da = my_k00[i])
+  dapc00_l[[i]] <- dapc(apos.gc, pop = grp20_l[[i]]$grp, n.pca = 10, n.da = my_k00[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp2_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 

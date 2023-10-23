@@ -86,6 +86,20 @@ DAPC.all.df$group <- factor(DAPC.all.df$group, levels=c("CO-S", "Laramie-S", "L6
 levels(DAPC.all.df$group)
 
 DAPC.cols = c("gray27", "gray", "#CAB2D6", "#A6CEE3", "#FFFF99", "white", "#33A02C", "#B2DF8A", "#1F78B4", "#FF7F00", "#E31A1C", "#FB9A99", "#B15928", "#FDBF6F")
+group.cols <- c("CO-S" = "gray27",
+               "Laramie-S" = "gray",
+               "L62-A"="#CAB2D6",
+               "Laramie.big-A"="#A6CEE3",
+               "Laramie.small-A"="#FFFF99",
+               "L45-S"="white",
+               "L39.big-A"="#33A02C",
+               "L39.small-A"="#B2DF8A",
+               "MT.big-A"="#1F78B4",
+               "ND-A"="#FF7F00",
+               "SK-A"="#E31A1C",
+               "BC-A"="#FB9A99",
+               "YK-A"="#B15928",
+               "YK-S"="#FDBF6F")
 
 png("njtree_all.png", height=7, width=7, res=300, units="in")
 plot.phylo(hookeri.nj, type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE, no.margin = TRUE)
