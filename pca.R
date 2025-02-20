@@ -2,6 +2,11 @@
 # PCA ###
 #########
 
+library(poppr)
+library(tidyverse)
+
+load("AllPops.gc.RData")
+
 # replace NA's
 sum(is.na(AllPops.gc$tab))
 AllPops.gc.scaled <- scaleGen(AllPops.gc, NA.method="mean")
@@ -37,12 +42,23 @@ pca.all.df$group[110:114] <- "YK-A"
 pca.all.df$group <- factor(pca.all.df$group, levels=c("CO-S", "Laramie-S", "L62-A", "Laramie.big-A", "Laramie.small-A", "L45-S", "L39.big-A", "L39.small-A", "MT.big-A", "ND-A", "SK-A", "BC-A", "YK-A", "YK-S"))
 
 pca.gg.12 <- ggplot(pca.all.df, aes(x = Axis1, y = Axis2))+ 
-  geom_point(aes(fill=group, shape=ms), size=3, stroke=0.7)+ 
+  geom_point(aes(fill=group, shape=ms), size=3.5, stroke=0.8)+ 
   theme_bw()+
   scale_shape_manual(values = c(24,21))+
-  scale_fill_manual(values=group.cols)+
+  scale_fill_manual(values=group.cols3)+
   #geom_text(aes(label=pop), size=3)+
-  guides(fill = guide_legend(override.aes=list(shape=c(24, 24, 21, 21, 21, 24, 21, 21, 21, 21, 21, 21, 21, 24))))
+  guides(fill = guide_legend(override.aes=list(shape=c(24, 24, 21, 21, 21, 24, 21, 21, 21, 21, 21, 21, 21, 24))), shape="none")+
+  theme(legend.title=element_blank(), 
+        legend.text = element_text(size=7), 
+        legend.key.size = unit(0.5, 'cm'),
+        legend.position=c(0.9, 0.24), 
+        legend.background = element_blank(), 
+        legend.box.background = element_rect(colour = "black"))+
+  labs(x="PC1", y="PC2")
+
+png("pca_12.png", height=7, width=8, res=300, units="in")
+pca.gg.12
+dev.off()
 
 pca.gg.13 <- ggplot(pca.all.df, aes(x = Axis1, y = Axis3))+ 
   geom_point(aes(fill=group, shape=ms), size=3, stroke=0.7)+ 

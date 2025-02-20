@@ -70,6 +70,7 @@ dips.gc <- popsub(AllPops.gc, sublist=sex.list, drop=FALSE)
 apos.gc <- popsub(AllPops.gc, sublist=apo.list, drop=FALSE)
 
 GBS.cols <- 
+
 ############
 # Distance #
 ############
@@ -522,7 +523,7 @@ hookeri.nj1000$node.label2[hookeri.nj1000$node.label<90] <- 1
 hookeri.nj1000$node.label2[hookeri.nj1000$node.label>90] <- 2
 hookeri.nj1000$node.label2[is.na(hookeri.nj1000$node.label2)] <- 1
 
-tree.pch <- DAPC.cols[DAPC.all.df$group]
+tree.pch <- group.cols2[AllPops.gc@other$group]
 tree.pch[1:41] <- 24
 tree.pch[42:114] <- 21
 tree.pch <- as.numeric(tree.pch)
@@ -591,14 +592,14 @@ AllPops.gc[1]@mlg
 for(i in 1:114) {
   ind.Hobs[i,5] <- as.character(AllPops.gc[i]@strata$pop)
   ind.Hobs[i,4] <- as.character(AllPops.gc[i]@strata$ms)
-  #ind.Hobs[i,3] <- mean(summary(AllPops.gc[i])$Hobs, na.rm=TRUE)
-  #ind.Hobs[i,2] <- ploidy(AllPops.gc[i])
-  #ind.Hobs[i,1] <- indNames(AllPops.gc[i])
+  ind.Hobs[i,3] <- mean(summary(AllPops.gc[i])$Hobs, na.rm=TRUE)
+  ind.Hobs[i,2] <- ploidy(AllPops.gc[i])
+  ind.Hobs[i,1] <- indNames(AllPops.gc[i])
   print(i)
 }
 
 ind.Hobs$ms <- factor(ind.Hobs$ms, levels=c("S", "A"))
-ind.Hobs$group <- DAPC.all.df$group
+ind.Hobs$group <- AllPops.gc@other$group
 
 mean.Hobs <- ind.Hobs %>%
   group_by(ms) %>%
@@ -609,7 +610,7 @@ DAPC.all.df$group
 gg.Hobs <- ggplot()+
   geom_boxplot(data=ind.Hobs, aes(y=Hobs, x=ms), alpha=0, width=0.2, outlier.shape=NA)+
   geom_jitter(data=ind.Hobs, aes(x=ms, y=Hobs, fill=group), alpha=1, shape=21, width=0.05, size=2)+
-  scale_fill_manual(values=DAPC.cols, name="Mating system")+
+  scale_fill_manual(values=group.cols3, name="Mating system")+
   guides(fill=FALSE)+
   new_scale_fill()+
   geom_errorbar(data=mean.Hobs, aes(ymax=mean+sd, ymin=mean-sd, x=as.numeric(as.factor(ms))+0.4), width=0)+

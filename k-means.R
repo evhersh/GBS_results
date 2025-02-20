@@ -14,8 +14,10 @@ library(adegenet)
 library(knitr)
 library(ggpubr)
 library(hierfstat)
+library(ggpattern)
+library(tidyverse)
 
-# All pops
+##### KMEANS #####
 
 kmeans.all <- find.clusters(AllPops.gc)
 all.tab <- tab(AllPops.gc, NA.method="mean")
@@ -44,13 +46,15 @@ colnames(my_df2)[1:3] <- c("Group", "K", "BIC")
 my_df2$K <- as.factor(my_df2$K)
 head(my_df2)
 
+##### plot 1 #####
+
 p1 <- ggplot(my_df2, aes(x = K, y = BIC))
 p1 <- p1 + geom_boxplot()
 p1 <- p1 + theme_bw()
 p1 <- p1 + xlab("Number of groups (K)")
 p1 # 4-6 clusters kind of looks right
 
-# plot 2 #
+##### plot 2 #####
 my_k0 <- 4
 
 grp0_l <- vector(mode = "list", length = length(my_k0))
@@ -74,7 +78,7 @@ p2 <- p2 + theme_bw()
 p2 <- p2 + scale_fill_manual(values=cols)
 p2
 
-# plot 3
+##### plot 3 #####
 my_k <- 4:6
 
 grp_l <- vector(mode = "list", length = length(my_k))
@@ -83,7 +87,7 @@ dapc_l <- vector(mode = "list", length = length(my_k))
 for(i in 1:length(dapc_l)){
   set.seed(10)
   grp_l[[i]] <- find.clusters(AllPops.gc, n.pca = 200, n.clust = my_k[i])
-  dapc_l[[i]] <- dapc(AllPops.gc, pop = grp_l[[i]]$grp, n.pca = 20, n.da = my_k[i])
+  dapc_l[[i]] <- dapc(AllPops.gc, pop = grp_l[[i]]$grp, n.pca = 30, n.da = my_k[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -97,6 +101,7 @@ tmp$Sample <- rownames(tmp)
 tmp <- melt(tmp, id = c("Sample", "K"))
 names(tmp)[3:4] <- c("Group", "Posterior")
 tmp$pop <- mystrata$pop[match(tmp$Sample, mystrata$id)]
+#tmp$pop <- AllPops.gc@other$group[match(tmp$Sample, indNames(AllPops.gc))]
 my_df <- tmp
 
 for(i in 2:length(dapc_l)){
@@ -112,7 +117,36 @@ for(i in 2:length(dapc_l)){
 grp.labs <- paste("K =", my_k)
 names(grp.labs) <- my_k
 
-my_df$pop <- factor(my_df$pop, levels=c("B53-S", "B60-S", "B42-S", "B46-S", "B49-S", "L62-S", "L62-A", "L05-S", "L08-S", "L10-S", "L11-S", "L12-S", "L13-S", "L06-A", "L16-A", "L17-A", "L39-A", "L41-A","L45-S", "L45-A", "C87-A", "C86-A", "C88-A", "C85-A", "C27-A", "C23-A", "C43-A", "S03-A", "SM-A", "C59-S"))
+my_df$pop <- factor(my_df$pop, levels=c("CO1-S", "CO2-S", "CO3-S", 
+                                        "CO4-S", "CO5-S", "WY1-S", 
+                                        "WY1-A", "WY2-S", "WY3-S", 
+                                        "WY4-S", "WY6-S", "WY7-S", 
+                                        "WY8-S", "WY9-A", "WY10-A", 
+                                        "WY11-A", "WY12-A", "WY13-A",
+                                        "WY14-S", "WY14-A", "WY15-A", 
+                                        "MT1-A", "MT2-A", "MT3-A", 
+                                        "MT4-A", "ND-A", "BC-A", 
+                                        "SK-A", "YK1-A", "YK2-S"))
+
+# my_df$pop <- factor(my_df$pop, levels=c(
+#   "CO-S",
+#   "Laramie-S",
+#   "L62-A",
+#   "Laramie.big-A",
+#   "Laramie.small-A",
+#   "L45-S",
+#   "L39.big-A",
+#   "L39.small-A",
+#   "MT.big-A",
+#   "ND-A",
+#   "SK-A",
+#   "BC-A",
+#   "YK-A",
+#   "YK-S"
+# ))
+
+my_df <- my_df %>%
+  mutate(ms = case_when(str_detect(pop, "-S") ~ "S", str_detect(pop, "-A") ~ "A"))
 
 # my_df0$Group <- as.character(my_df0$Group)
 my_df$Group <- as.character(my_df$Group)
@@ -161,18 +195,37 @@ p3 <- p3 + ylab("Posterior membership probability")
 p3 <- p3 + theme(legend.position='none')
 #p3 <- p3 + scale_color_brewer(palette="Paired")
                                         #black  #grey   #blue       #peach    # yellow    #orange
-p3 <- p3 + scale_fill_manual(values=c("gray27", "gray", "#1F78B4", "#FDBF6F", "#FFFF99", "#FF7F00"))
-p3 <- p3 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),panel.spacing.x=unit(0.1, "lines"))
+# p3 <- p3 + scale_fill_manual(values=c("#37474f",
+#                                       "#607d8b",
+#                                       "#79554b",
+#                                       "#4e342e",
+#                                       "#cfd8dc",
+#                                       "#bcaaa4"))
+
+p3 <- p3 + scale_fill_manual(values=c("#4e342e",
+                                      "#79554b",
+                                      "#607d8b",
+                                      "#37474f",
+                                      "#bcaaa4",
+                                      "#cfd8dc"))
+p3 <- p3 + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8),panel.spacing.x=unit(0.1, "lines"),
+                 strip.text.x.top = element_text(angle=90))
 p3
 
-ggarrange(ggarrange(p1,
-                    p2,
-                    ncol = 2, labels = c("A", "B")),
-          p3,
-          nrow = 2,
-          labels = c("", "C"),
-          heights = c(1, 2)
-)
+
+png("kmeans-all.png", height=3, width=11, res=300, units="in")
+p3
+dev.off()
+
+# ggarrange(ggarrange(p1,
+#                     p2,
+#                     ncol = 2, labels = c("A", "B")),
+#           p3,
+#           nrow = 2,
+#           labels = c("", "C"),
+#           heights = c(1, 2)
+# )
+
 
 
 # Apos only

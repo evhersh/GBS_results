@@ -101,9 +101,24 @@ group.cols <- c("CO-S" = "gray27",
                "YK-A"="#B15928",
                "YK-S"="#FDBF6F")
 
+group.cols2 <- c("CO-S" = "darkred",
+                "Laramie-S" = "sienna2",
+                "L62-A"="#CAB2D6",
+                "Laramie.big-A"="#A6CEE3",
+                "Laramie.small-A"="cyan3",
+                "L45-S"="tan",
+                "L39.big-A"="darkorchid3",
+                "L39.small-A"="deeppink3",
+                "MT.big-A"="#1F78B4",
+                "ND-A"="aquamarine",
+                "SK-A"="limegreen",
+                "BC-A"="forestgreen",
+                "YK-A"="aquamarine4",
+                "YK-S"="goldenrod")
+
 png("njtree_all.png", height=7, width=7, res=300, units="in")
 plot.phylo(hookeri.nj, type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE, no.margin = TRUE)
-tiplabels(pch=21, col="black", bg=DAPC.cols[DAPC.all.df$group])
+tiplabels(pch=21, col="black", bg=group.cols2[AllPops.gc@other$group])
 add.scale.bar()
 legend("bottomright", legend=levels(DAPC.all.df$group), cex=0.5, pch=21, col="black", pt.bg=DAPC.cols, pt.cex=1)
 dev.off()
