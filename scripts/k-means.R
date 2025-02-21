@@ -24,15 +24,10 @@ all.tab <- tab(AllPops.gc, NA.method="mean")
 all.xval <- xvalDapc(all.tab, grp=kmeans.all$grp)
 all.xval[2:6]
 
-## from vcfR -- run k-means multiple times
-# library(vcfR)
-# vcf <- read.vcfR("prubi_gbs.vcf.gz")
-# pop.data <- read.table("population_data.gbs.txt", sep = "\t", header = TRUE)
-# all(colnames(vcf@gt)[-1] == pop.data$AccessID)
-# ## [1] TRUE
-# gl_rubi <- vcfR2genlight(vcf)
+dapc.all <- dapc(AllPops.gc, n.pca=50, n.da=20)
 
-# library(adegenet)
+optim.a.score(dapc.all)
+
 maxK <- 30
 myMat <- matrix(nrow=50, ncol=maxK)
 colnames(myMat) <- 1:ncol(myMat)
@@ -63,7 +58,7 @@ dapc0_l <- vector(mode = "list", length = length(my_k0))
 for(i in 1:length(dapc0_l)){
   set.seed(10)
   grp0_l[[i]] <- find.clusters(AllPops.gc, n.pca = 200, n.clust = my_k0[i])
-  dapc0_l[[i]] <- dapc(AllPops.gc, pop = grp0_l[[i]]$grp, n.pca = 20, n.da = my_k0[i])
+  dapc0_l[[i]] <- dapc(AllPops.gc, pop = grp0_l[[i]]$grp, n.pca = 10, n.da = my_k0[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -87,7 +82,7 @@ dapc_l <- vector(mode = "list", length = length(my_k))
 for(i in 1:length(dapc_l)){
   set.seed(10)
   grp_l[[i]] <- find.clusters(AllPops.gc, n.pca = 200, n.clust = my_k[i])
-  dapc_l[[i]] <- dapc(AllPops.gc, pop = grp_l[[i]]$grp, n.pca = 30, n.da = my_k[i])
+  dapc_l[[i]] <- dapc(AllPops.gc, pop = grp_l[[i]]$grp, n.pca = 10, n.da = my_k[i])
   #  dapc_l[[i]] <- dapc(gl_rubi, pop = grp_l[[i]]$grp, n.pca = 3, n.da = 2)
 }
 
@@ -229,4 +224,39 @@ dev.off()
 
 
 # Apos only
+# Ensure enough colors for the unique groups
+unique_groups <- length(unique(my_df$Group))  # Count unique values in Group
+colors <- RColorBrewer::brewer.pal(max(3, unique_groups), "Dark2")  # Pick a palette
 
+
+# First Plot (p3)
+p3 <- ggplot(my_df, aes(x = Sample, y = Posterior, fill = Group)) +
+  geom_bar(stat = "identity", color = "white") +
+  facet_grid(K ~ pop, scales = "free_x", space = "free", labeller = labeller(K = grp.labs)) +
+  theme_bw() +
+  ylab("Posterior membership probability") +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+    panel.spacing.x = unit(0.1, "lines"),
+    strip.text.x.top = element_text(angle = 90)
+  ) +
+  scale_fill_viridis(discrete = TRUE)  # Use viridis color scale for fill
+
+p3
+
+# Combine with Hobs plot
+theme_adjustment <- theme(
+  plot.margin = margin(0, 0, 0, 0),  # Adjust margins for both plots
+  panel.spacing = unit(0, "lines")    # No space between panels
+)
+
+p3 <- p3 + theme_adjustment
+gg.Hobs.bar <- gg.Hobs.bar + theme_adjustment
+
+# Stack with minimal white space
+kh.plot <- gg.Hobs.bar / plot_spacer() / p3 + plot_layout(ncol = 1, heights = c(1,-0.11, 1), guides="collect")
+
+png("./figures/kmeans_hobs.png", height=7, width=10, res=300, units="in")
+kh.plot
+dev.off()

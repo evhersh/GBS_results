@@ -41,6 +41,17 @@ for(i in 1:114) {
   print(i)
 }
 
+ind.Hobs$pop <- factor(ind.Hobs$pop, levels=c("CO1-S", "CO2-S", "CO3-S", 
+                                        "CO4-S", "CO5-S", "WY1-S", 
+                                        "WY1-A", "WY2-S", "WY3-S", 
+                                        "WY4-S", "WY6-S", "WY7-S", 
+                                        "WY8-S", "WY9-A", "WY10-A", 
+                                        "WY11-A", "WY12-A", "WY13-A",
+                                        "WY14-S", "WY14-A", "WY15-A", 
+                                        "MT1-A", "MT2-A", "MT3-A", 
+                                        "MT4-A", "ND-A", "BC-A", 
+                                        "SK-A", "YK1-A", "YK2-S"))
+
 ind.Hobs$ms <- factor(ind.Hobs$ms, levels=c("S", "A"))
 
 mean.Hobs <- ind.Hobs %>%
