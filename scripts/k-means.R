@@ -241,7 +241,14 @@ p3 <- ggplot(my_df, aes(x = Sample, y = Posterior, fill = Group)) +
     panel.spacing.x = unit(0.1, "lines"),
     strip.text.x.top = element_text(angle = 90)
   ) +
-  scale_fill_viridis(discrete = TRUE)  # Use viridis color scale for fill
+  scale_fill_manual(values=c("#4e342e",
+                             "#79554b",
+                             "#607d8b",
+                             "#37474f",
+                             "#bcaaa4",
+                             "#cfd8dc"))
+  #scale_fill_brewer(palette = "Accent")
+  #scale_fill_viridis(discrete = TRUE)  # Use viridis color scale for fill
 
 p3
 

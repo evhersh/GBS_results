@@ -21,10 +21,10 @@ library(adegenet)
 # read data, one ploidy at a time, and then combine
 
 # strata (sample, pop, ms)
-mystrata <- read.csv("~/Google Drive/GitHub/Hookeri-GBS/popmap_all.csv")
+mystrata <- read.csv("./data/popmap_all.csv")
 
 # vcf to vcfR
-vcf <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/final.filtered.snps.vcf", verbose = TRUE)
+vcf <- read.vcfR("./data/final.filtered.snps.vcf", verbose = TRUE)
 # vcf.dips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.dips.vcf")
 # vcf.trips <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.trips.vcf")
 # vcf.tets <- read.vcfR("~/Google Drive/GitHub/Hookeri-GBS/Data/filtered.tets.vcf")
@@ -56,8 +56,6 @@ allele2 <- masplit(ad, record = 2)
 
 ad1 <- allele1 / (allele1 + allele2)
 ad2 <- allele2 / (allele1 + allele2)
-
-
 
 # diploid !!!!
 hist(ad2[,"B42-S_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
@@ -117,6 +115,54 @@ axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","
 hist(ad2[,"C59-S_2"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
 hist(ad1[,"C59-S_2"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
 axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# L11-S_1 high het ind...inconclusive
+hist(ad2[,"L11-S_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L11-S_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# L11-S_2 looks more normal....
+hist(ad2[,"L11-S_2"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L11-S_2"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# L10-S_1 high het ind...inconclusive
+hist(ad2[,"L10-S_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L10-S_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# L10-S_2...Looks like normal diploid...
+hist(ad2[,"L10-S_2"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L10-S_2"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# L10-S_3 high het ind...inconclusive
+hist(ad2[,"L10-S_3"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L10-S_3"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# SM-A_1 putative tetraploid?
+hist(ad2[,"SM-A_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"SM-A_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# nquack check
+hist(ad2[,"L16-A_4"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L16-A_4"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+#### PULL OUT COVERAGE? ####
+# Extract depth (DP) values
+dp_matrix <- extract.gt(vcf, element = "DP", as.numeric = TRUE)
+
+# Compute per-individual mean depth (ignoring NAs)
+mean_coverage <- colMeans(dp_matrix, na.rm = TRUE)
+
+# Convert to a data frame for easy handling
+coverage_df <- data.frame(Individual = colnames(dp_matrix), Mean_Coverage = mean_coverage)
+
+# View results
+print(coverage_df)
 
 #### Clean-up? ####
 # ad <- extract.gt(vcf, element = 'AD')

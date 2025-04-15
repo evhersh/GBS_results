@@ -15,7 +15,7 @@ tree.pch <- as.numeric(tree.pch)
 
 tree.legend.pch <- c(24, 24, 21, 21, 21, 24, 21, 21, 21, 21, 21, 21, 21, 24)
 
-png("njtree_all_v2.png", height=7, width=7, res=300, units="in")
+png("./figures/njtree_all.png", height=7, width=7, res=300, units="in")
 plot.phylo(hookeri.nj1000, type="unrooted", cex=0.6, lab4ut = "axial", font=2, show.tip.label = FALSE, no.margin = TRUE)
 tiplabels(pch=tree.pch, col="black", bg=group.cols3[AllPops.gc@other$group], cex=1.3)
 add.scale.bar()

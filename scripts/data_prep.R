@@ -17,6 +17,7 @@ library(hierfstat)
 library(ggnewscale)
 library(dplyr)
 library(here)
+library(patchwork)
 
 ##### Data import #####
 
@@ -135,6 +136,21 @@ gg.MLGdists <- ggplot(data=apodist.df, aes(x=value))+
   theme(legend.position = "none")+
   xlim(0, 0.35)
 
+gg.MLGdists2 <- ggplot(data=apodist.df, aes(x=value)) +
+  geom_histogram(aes(y=..density..), bins=100, color="black", fill="grey50", size=.75) +
+  theme_classic() +
+  geom_density(fill="darkgrey", alpha=.3) +
+  geom_vline(aes(xintercept=0.1), color="black", linetype="dashed", size=.75) +
+  labs(x="", y="Density") +
+  theme(legend.position = "none") +
+  xlim(0, 0.35) +
+  annotate("segment",
+           x = 0.02647497, xend = 0.02647497, 
+           y = 23, yend = 19.5,  # Adjust y position
+           color = "black", size = 1, 
+           arrow = arrow(type = "closed", length = unit(0.15, "inches")))
+
+
 #sexual pairwise dist prevosti
 
 ddist.dips.df <- melt(as.matrix(ddist.dips), varnames=c("row", "col"))
@@ -153,7 +169,7 @@ gg.MLGdists
 dev.off()
 
 png("./figures/distance.png", height=7, width=8, res=300, units="in")
-ggarrange(gg.MLGdists, gg.sexdists, nrow=2, ncol=1, labels=c("A", "B"))
+ggarrange(gg.MLGdists2, gg.sexdists, nrow=2, ncol=1, labels=c("A", "B"))
 dev.off()
 
 ##### Set up groups #####
@@ -215,3 +231,32 @@ AllPops.gc@other$group2 <- factor(AllPops.gc@other$group, levels = c(
   "YK-A"
 ))
 
+group.cols2 <- c("CO-S" = "darkred",
+                 "Laramie-S" = "sienna2",
+                 "L62-A"="#CAB2D6",
+                 "Laramie.big-A"="#A6CEE3",
+                 "Laramie.small-A"="cyan3",
+                 "L45-S"="tan",
+                 "L39.big-A"="darkorchid3",
+                 "L39.small-A"="deeppink3",
+                 "MT.big-A"="#1F78B4",
+                 "ND-A"="aquamarine",
+                 "SK-A"="limegreen",
+                 "BC-A"="forestgreen",
+                 "YK-A"="aquamarine4",
+                 "YK-S"="goldenrod")
+
+group.cols3 <- c(`CO-S` = "#E65100",
+                 `Laramie-S` = "#FFB300",
+                 `L62-A` = "#E1BEE7", 
+                 `Laramie.big-A` = "#7E57C2",
+                 `Laramie.small-A` = "#4A14BC",
+                 `L45-S` = "#9c27b0",
+                 `L39.big-A` = "#AD1457",
+                 `L39.small-A` = "#EC407A",
+                 `MT.big-A` = "#1565C0",
+                 `ND-A` = "#64B5F6",
+                 `SK-A` = "#004d40",
+                 `BC-A` = "#26A69A",
+                 `YK-A` = "#558B2F",
+                 `YK-S` = "#a5d6a7")

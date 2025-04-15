@@ -56,7 +56,7 @@ pca.gg.12 <- ggplot(pca.all.df, aes(x = Axis1, y = Axis2))+
         legend.box.background = element_rect(colour = "black"))+
   labs(x="PC1", y="PC2")
 
-png("pca_12.png", height=7, width=8, res=300, units="in")
+png("./figures/pca_12.png", height=7, width=8, res=300, units="in")
 pca.gg.12
 dev.off()
 

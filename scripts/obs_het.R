@@ -20,9 +20,10 @@ ind.Hobs$ms <- factor(ind.Hobs$ms, levels=c("S", "A"))
 ind.Hobs$group <- AllPops.gc@other$group
 
 # Second Plot (p4)
-gg.Hobs.bar <- ggplot(ind.Hobs, aes(x = ind, y = Hobs)) +
-  geom_bar(stat = "identity", color = "white", fill = "grey40") +  # Ensure bars are grey
+gg.Hobs.bar <- ggplot(ind.Hobs, aes(x = ind, y = Hobs, fill=group)) +
+  geom_bar(stat = "identity", color = "white") +  # Ensure bars are grey
   facet_grid(. ~ pop, scales = "free_x", space = "free") +
+  scale_fill_manual(values=group.cols3)+
   #scale_y_reverse() +  # Flip the y-axis without changing values
   theme_bw() +
   ylab("Observed Heterozygosity (Hobs)") +  # Keep y-axis label
