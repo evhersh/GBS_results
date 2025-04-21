@@ -293,4 +293,8 @@ print(summary_df)
 nq.df <- read.csv("./data/nQuack_v2.csv")
 
 nq.df <- nq.df %>%
-  left_join(summary_df, by=join_by(sample_name==sample))
+  left_join(summary_df, by=join_by(sample_name==sample)) %>%
+  left_join(ind.Hobs %>%
+              select(ind, Hobs), by=join_by(sample_name==ind))
+
+write.csv(nq.df, "./data/nQuack_v3.csv")

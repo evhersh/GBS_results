@@ -57,6 +57,11 @@ allele2 <- masplit(ad, record = 2)
 ad1 <- allele1 / (allele1 + allele2)
 ad2 <- allele2 / (allele1 + allele2)
 
+# messy one
+hist(ad2[,"L16-A_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L16-A_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
 # diploid !!!!
 hist(ad2[,"B42-S_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
 hist(ad1[,"B42-S_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
@@ -147,8 +152,104 @@ hist(ad1[,"SM-A_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
 axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
 
 # nquack check
-hist(ad2[,"L16-A_4"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
-hist(ad1[,"L16-A_4"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+png("./figures/ploidy/C43-A_4.png", width=800, height=600)
+hist(ad2[,"C43-A_4"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"C43-A_4"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+dev.off()
+
+# nquack check
+png("./figures/ploidy/C43-A_1.png", width=800, height=600)
+hist(ad2[,"C43-A_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"C43-A_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+dev.off()
+
+# Save plots for problematic samples ----
+nq.df <- read.csv("./data/nQuack_v3.csv")
+
+# Filter samples marked as 'wrong'
+wrong_samples <- nq.df$sample_name[nq.df$wrong == "yes"]
+
+# Loop through each of them
+for (sample in wrong_samples) {
+  png_filename <- paste0("./figures/ploidy/", sample, "_allele_balance.png")
+  
+  png(filename = png_filename, width = 800, height = 600)
+  
+  hist(ad2[, sample], breaks = seq(0, 1, by = 0.02),
+       col = "#1f78b4", xlim = c(0, 1), ylim = c(0, 1.1 * max(table(cut(ad2[, sample], breaks = seq(0, 1, by = 0.02))), na.rm = TRUE)),
+       main = paste("Allele Balance Histogram:", sample),
+       xlab = "Allele Balance",
+       xaxt = "n", 
+       ylab = "Frequency")
+  
+  hist(ad1[, sample], breaks = seq(0, 1, by = 0.02),
+       col = "#a6cee3", add = TRUE)
+  
+  axis(side = 1, at = c(0, 0.25, 1/3, 0.5, 2/3, 0.75, 1),
+       labels = c("0", "1/4", "1/3", "1/2", "2/3", "3/4", "1"))
+  
+  dev.off()
+}
+
+
+# Clean messy samples ----
+
+# L16-A_1 ----
+
+hist(ad2[,"L16-A_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L16-A_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+# Subset to a vector for manipulation.
+tmp <- allele1[,"L16-A_1"]
+#sum(tmp == 0, na.rm = TRUE)
+#tmp <- tmp[tmp > 0]
+tmp <- tmp[tmp <= 150]
+
+dev.off()
+hist(tmp, breaks=seq(0,150,by=1), col="#808080", main = "L16-A_1")
+
+sums <- apply(allele1, MARGIN=2, quantile, probs=c(0.025, 0.60), na.rm=TRUE)
+sums[,"L16-A_1"]
+abline(v=sums[,"L16-A_1"], col=2, lwd=2)
+
+
+sums <- apply(allele1, MARGIN=2, quantile, probs=c(0.025, 0.60), na.rm=TRUE)
+# Allele 1
+dp2 <- sweep(allele1, MARGIN=2, FUN = "-", sums[1,])
+#allele1[dp2 < 0] <- NA
+vcf@gt[,-1][ dp2 < 0 & !is.na(vcf@gt[,-1]) ] <- NA
+dp2 <- sweep(allele1, MARGIN=2, FUN = "-", sums[2,])
+#allele1[dp2 > 0] <- NA
+vcf@gt[,-1][dp2 > 0] <- NA
+# Allele 2
+dp2 <- sweep(allele2, MARGIN=2, FUN = "-", sums[1,])
+vcf@gt[,-1][ dp2 < 0 & !is.na(vcf@gt[,-1]) ] <- NA
+dp2 <- sweep(allele2, MARGIN=2, FUN = "-", sums[2,])
+vcf@gt[,-1][dp2 > 0] <- NA
+
+ad <- extract.gt(vcf, element = 'AD')
+allele1 <- masplit(ad, record = 1)
+allele2 <- masplit(ad, record = 2)
+
+gt <- extract.gt(vcf, element = 'GT')
+hets <- is_het(gt)
+is.na( ad[ !hets ] ) <- TRUE
+
+allele1 <- masplit(ad, record = 1)
+allele2 <- masplit(ad, record = 2)
+
+ad1 <- allele1 / (allele1 + allele2)
+ad2 <- allele2 / (allele1 + allele2)
+
+hist(ad2[,"L16-A_1"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"L16-A_1"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
+axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
+
+hist(ad2[,"C43-A_4"], breaks = seq(0,1,by=0.02), col = "#1f78b4", xaxt="n")
+hist(ad1[,"C43-A_4"], breaks = seq(0,1,by=0.02), col = "#a6cee3", add = TRUE)
 axis(side=1, at=c(0,0.25,0.333,0.5,0.666,0.75,1), labels=c(0,"1/4","1/3","1/2","1/3","3/4",1))
 
 #### PULL OUT COVERAGE? ####
