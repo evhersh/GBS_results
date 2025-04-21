@@ -158,6 +158,42 @@ for(i in 1:length(samples)){
             row.names = FALSE)
 }
 
+## examine best model ----
+inpathtext <- "./data/output/fix/"
+samples <- c("C23-A_1-RG", "C23-A_2-RG", "C23-A_3-RG")
+
+for(i in 1:length(samples)){
+  temp <- read.csv(paste0(inpathtext, samples[i], ".csv"))
+  summary <- quackit(model_out =  temp, 
+                     summary_statistic = "BIC", 
+                     mixtures = c("diploid", "triploid", "tetraploid"))
+  write.csv(summary, 
+            file = paste0("./data/output/fix/model/", samples[i], ".csv"),
+            row.names = FALSE)
+}
+
+key <- data.frame(sample = c("C23-A_1-RG", "C23-A_2-RG", "C23-A_3-RG"), 
+                  ploidal.level = c("diploid","triploid", "tetraploid"))
+
+# Read in quackit() output
+dfs <- lapply(list.files("./data/output/fix/model/", full.names = TRUE  ), read.csv)
+alloutput <- do.call(rbind, dfs)
+
+# Combined
+alloutputcombo <- dplyr::left_join(alloutput, key)
+
+# Check the accuracy
+alloutputcombo <- alloutputcombo %>%
+  dplyr::mutate(accuracy = ifelse(winnerBIC == ploidal.level, 1, 0))
+
+## What distribution and model type should we use?
+sumcheck <- alloutputcombo %>% 
+  group_by(Distribution, Type) %>% 
+  summarize(total = n(), correct = sum(accuracy))
+
+kbl(sumcheck) %>%
+  kable_paper("hover", full_width = F) 
+
 # run only the best models?
 out <- c()
 
@@ -173,7 +209,7 @@ for(i in 1:length(samples)){
 
 saveRDS(out, "./data/output/fix/bestquack.rds")
 
-# bootsrap
+## bootstrap ----
 bout <- c()
 
 for(i in 1:length(samples)){
