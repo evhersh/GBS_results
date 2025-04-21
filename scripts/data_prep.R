@@ -18,6 +18,7 @@ library(ggnewscale)
 library(dplyr)
 library(here)
 library(patchwork)
+library(stringr)
 
 ##### Data import #####
 
@@ -260,3 +261,36 @@ group.cols3 <- c(`CO-S` = "#E65100",
                  `BC-A` = "#26A69A",
                  `YK-A` = "#558B2F",
                  `YK-S` = "#a5d6a7")
+
+# PLOIDY SAMPLE METADATA ----
+
+# Load VCF
+vcf <- read.vcfR(here("data", "final.filtered.snps.vcf"))
+
+# Extract sample names
+samples <- colnames(vcf@gt)[-1]
+
+# Extract depth and allele quality
+dp <- extract.gt(vcf, element = "DP", as.numeric = TRUE)
+qr <- extract.gt(vcf, element = "QR", as.numeric = TRUE)
+qa <- extract.gt(vcf, element = "QA", as.numeric = TRUE)
+ro <- extract.gt(vcf, element = "RO", as.numeric = TRUE)
+ao <- extract.gt(vcf, element = "AO", as.numeric = TRUE)
+
+# Compute QR / (QR + QA) per site/sample (quality-based allele balance)
+qr_qa_balance <- qr / (qr + qa)
+
+# Compute summary per sample
+summary_df <- data.frame(
+  sample = samples,
+  mean_DP = colMeans(dp, na.rm = TRUE),
+  mean_ro = colMeans(ro, na.rm = TRUE),
+  mean_ao = colMeans(ao, na.rm = TRUE)
+)
+
+print(summary_df)
+
+nq.df <- read.csv("./data/nQuack_v2.csv")
+
+nq.df <- nq.df %>%
+  left_join(summary_df, by=join_by(sample_name==sample))

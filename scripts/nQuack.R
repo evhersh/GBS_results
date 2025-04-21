@@ -231,7 +231,7 @@ bout.df <- bind_rows(bout)
 
 write.csv(bind_rows(bout), "./data/output/fix/bestquack_boots.csv")
 
-# join with metadata
+# Join with metadata ----
 sample_names <- indNames(AllPops.gc) # From adegenet/poppr
 ploidy_vals <- AllPops.gc@ploidy
 
@@ -253,3 +253,6 @@ bout.joined <- left_join(bout.df, meta.df, by = "short_sample") %>%
   rename(assumed_ploidy = ploidy)
 
 write.csv(bout.joined, "./data/output/nQuack_v1.csv")
+
+nq.df <- read.csv("./data/nQuack_v2.csv")
+
