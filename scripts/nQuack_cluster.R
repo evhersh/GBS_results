@@ -51,6 +51,9 @@ for(i in 1:length(newfilelist)){
 # bootsrap
 bout <- c()
 
+samples <- list.files(path = "./data/processed/fix/", pattern = "*.csv")
+samples <- gsub(".csv", "", samples)  # Remove .csv to get sample names
+
 for(i in 1:length(samples)){
   temp <- as.matrix(read.csv(paste0("./data/processed/fix/", samples[i], ".csv")))
   bout[[i]] <- quackNboots(temp, 
